@@ -13,12 +13,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UndoManagerTest", "UndoMana
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleExample", "SimpleExample\SimpleExample.csproj", "{22E1BF8D-07CB-4DD8-943D-291C11B909A9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{618E0440-69B8-435C-B574-68939F034967}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{1412362D-DE95-4E24-B048-B45B6D9F8152}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 4
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs31
 		SccProjectUniqueName0 = SimpleExample\\SimpleExample.csproj
+		SccProjectTopLevelParentUniqueName0 = UndoManager.sln
 		SccProjectName0 = SimpleExample
 		SccLocalPath0 = SimpleExample
 		SccLocalPath1 = .
@@ -26,6 +31,7 @@ Global
 		SccProjectName2 = UndoManager
 		SccLocalPath2 = UndoManager
 		SccProjectUniqueName3 = UndoManagerTest\\UndoManagerTest.csproj
+		SccProjectTopLevelParentUniqueName3 = UndoManager.sln
 		SccProjectName3 = UndoManagerTest
 		SccLocalPath3 = UndoManagerTest
 	EndGlobalSection
@@ -74,5 +80,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B683119B-20DE-4E37-A073-A4AFDBD62B51} = {618E0440-69B8-435C-B574-68939F034967}
+		{22E1BF8D-07CB-4DD8-943D-291C11B909A9} = {1412362D-DE95-4E24-B048-B45B6D9F8152}
 	EndGlobalSection
 EndGlobal
