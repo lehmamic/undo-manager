@@ -21,12 +21,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq.Expressions;
 using UndoRedo.Invocation;
+using UndoRedo.Properties;
 using UndoRedo.State;
 using UndoRedo.Transaction;
-using UndoRedo.Properties;
-using System.Globalization;
 
 namespace UndoRedo
 {
@@ -394,7 +394,7 @@ namespace UndoRedo
 		/// Gets the default undo manager.
 		/// </summary>
 		/// <value>The default undo manager.</value>
-		public static UndoManager DefaultUndoManager
+		public static IUndoManager DefaultUndoManager
 		{
 			get
 			{
