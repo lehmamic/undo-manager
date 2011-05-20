@@ -32,6 +32,8 @@ namespace UndoRedo.Transaction
 	{
 		private readonly Stack<IInvokable> invokables = new Stack<IInvokable>();
 		private readonly UndoManager owner;
+
+		private string actionName = string.Empty;
 		private bool disposed = false;
 
 		/// <summary>
@@ -131,6 +133,22 @@ namespace UndoRedo.Transaction
 			{
 				IInvokable invokable = this.invokables.Pop();
 				invokable.Invoke();
+			}
+		}
+
+		/// <summary>
+		/// Name of the action, which is performed with this invocation.
+		/// </summary>
+		public string ActionName
+		{
+			get
+			{
+				return this.actionName;
+			}
+
+			set
+			{
+				this.actionName = value != null ? value : string.Empty;
 			}
 		}
 

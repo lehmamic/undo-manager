@@ -25,6 +25,8 @@ using System.Linq.Expressions;
 using UndoRedo.Invocation;
 using UndoRedo.State;
 using UndoRedo.Transaction;
+using UndoRedo.Properties;
+using System.Globalization;
 
 namespace UndoRedo
 {
@@ -38,6 +40,7 @@ namespace UndoRedo
 		private readonly Stack<UndoRedoTransaction> transactionStack = new Stack<UndoRedoTransaction>();
 
 		private UndoRedoState state = UndoRedoState.Recording;
+		private string actionNameForCurrentTransaction = string.Empty;
 
 		#region IStateHost members
 
@@ -226,6 +229,91 @@ namespace UndoRedo
 			}
 		}
 
+		/// <summary>
+		/// Sets the action name of the undo/redo operation, which will be appended to a localized undo/redo menu item label.
+		/// </summary>
+		/// <remarks>
+		/// The action name should always be set atthe same time like the registration of the operation.
+		/// </remarks>
+		/// <param name="actionName">The name of the undo redo operation.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="actionName"/> is a <see langword="null"/> reference.</exception>
+		public void SetActionName(string actionName)
+		{
+			if (actionName == null)
+			{
+				throw new ArgumentNullException("actionName");
+			}
+
+			this.actionNameForCurrentTransaction = actionName;
+
+			if (this.transactionStack.Count > 0)
+			{
+				this.transactionStack.Peek().ActionName = this.actionNameForCurrentTransaction;
+			}
+		}
+
+		/// <summary>
+		/// Action name of teh undo operation.
+		/// </summary>
+		public string UndoActionName
+		{
+			get
+			{
+				return this.undoHistory.Count > 0 ? this.undoHistory.Peek().ActionName : string.Empty;
+			}
+		}
+
+		/// <summary>
+		/// Gets the localized titel of the menu item according to the current undo action name.
+		/// </summary>
+		public string UndoMenuItemTitel
+		{
+			get { return UndoManager.GetUndoMenuTitleForUndoActionName(this.UndoActionName); }
+		}
+
+		/// <summary>
+		/// Action name of the redo operation.
+		/// </summary>
+		public string RedoActionName
+		{
+			get
+			{
+				return this.redoHistory.Count > 0 ? this.redoHistory.Peek().ActionName : string.Empty;
+			}
+		}
+
+		/// <summary>
+		/// Gets the localized titel of the menu item according to the current redo action name.
+		/// </summary>
+		public string RedoMenuItemTitel
+		{
+			get { return UndoManager.GetRedoMenuTitleForRedoActionName(this.UndoActionName); }
+		}
+
+		#endregion
+
+		#region Public static members
+
+		/// <summary>
+		/// Gets the localized title of the undo menu item for the action identified by the given name.
+		/// </summary>
+		/// <param name="actionName">Name of the action.</param>
+		/// <returns>The localized titel of the undo menu item for the provided action name.</returns>
+		public static string GetUndoMenuTitleForUndoActionName(string actionName)
+		{
+			return GetMenuItemTitelForAction(Resources.UndoMenuItemName, actionName);
+		}
+
+		/// <summary>
+		/// Gets the localized title of the redo menu item for the action identified by the given name.
+		/// </summary>
+		/// <param name="actionName">Name of the action.</param>
+		/// <returns>The localized titel of the redo menu item for the provided action name.</returns>
+		public static string GetRedoMenuTitleForRedoActionName(string actionName)
+		{
+			return GetMenuItemTitelForAction(Resources.RedoMenuItemName, actionName);
+		}
+
 		#endregion
 
 		#region Private Members
@@ -233,6 +321,7 @@ namespace UndoRedo
 		private UndoRedoTransaction InnerCreateTransaction()
 		{
 			UndoRedoTransaction transaction = new UndoRedoTransaction(this);
+			transaction.ActionName = this.actionNameForCurrentTransaction;
 			this.transactionStack.Push(transaction);
 
 			return transaction;
@@ -264,6 +353,11 @@ namespace UndoRedo
 		private UndoRedoTransaction RecordingTransaction()
 		{
 			return this.transactionStack.Count > 0 ? this.transactionStack.Peek() : null;
+		}
+
+		private static string GetMenuItemTitelForAction(string operation, string actionName)
+		{
+			return !string.IsNullOrEmpty(actionName) ? string.Format(CultureInfo.CurrentUICulture, Resources.UndoRedoMenuLabelPattern, operation, actionName) : operation;
 		}
 
 		#endregion
