@@ -21,16 +21,17 @@
 using System;
 using System.Linq.Expressions;
 
-namespace UndoRedo
+namespace UndoRedo.Invocation
 {
 	/// <summary>
-	/// The action invocation class includes the selector, the receiver and the arguments to call a method of an object.
+	/// The function invocation class includes the selector, the receiver and the arguments to call a method of an object.
 	/// </summary>
 	/// <typeparam name="TSource">The type of the source.</typeparam>
-	internal class ActionInvocation<TSource> : Invocation<TSource>
+	/// <typeparam name="TResult">The type of the result.</typeparam>
+	internal class FunctionInvocation<TSource, TResult> : Invocation<TSource>
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ActionInvocation&lt;TSource&gt;"/> class.
+		/// Initializes a new instance of the <see cref="FunctionInvocation&lt;TSource, TResult&gt;"/> class.
 		/// </summary>
 		/// <param name="target">The target on which the operation described by <paramref name="expression"/> has to be invoked.</param>
 		/// <param name="expression">The LinQ expressio describing the action to invoke.</param>
@@ -39,16 +40,16 @@ namespace UndoRedo
 		///		<para>- or -</para>
 		///		<para><paramref name="expression"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		public ActionInvocation(TSource target, Expression<Action<TSource>> expression)
+		public FunctionInvocation(TSource target, Expression<Func<TSource, TResult>> expression)
 		{
 			if (target == null)
 			{
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException("expression");
 			}
 
-			if (expression == null)
+			if (target == null)
 			{
-				throw new ArgumentNullException("expression");
+				throw new ArgumentNullException("target");
 			}
 
 			this.Target = target;
@@ -58,15 +59,15 @@ namespace UndoRedo
 		/// <summary>
 		/// Gets the expression required to invoke the operation.
 		/// </summary>
-		public Expression<Action<TSource>> Expression { get; private set; }
+		public Expression<Func<TSource, TResult>> Expression { get; private set; }
 
 		/// <summary>
-		/// Invokes this invocation.
+		/// Invokes this instance.
 		/// </summary>
 		public override void Invoke()
 		{
-			Action<TSource> action = this.Expression.Compile();
-			action(Target);
+			Func<TSource, TResult> func = this.Expression.Compile();
+			func(Target);
 		}
 	}
 }
