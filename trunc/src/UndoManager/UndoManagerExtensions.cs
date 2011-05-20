@@ -24,50 +24,34 @@ using System.Linq.Expressions;
 namespace UndoRedo
 {
 	/// <summary>
-	/// The function invocation class includes the selector, the receiver and the arguments to call a method of an object.
+	/// This class provides extension methods to support the usage of the <see cref="UndoManager"/>.
 	/// </summary>
-	/// <typeparam name="TSource">The type of the source.</typeparam>
-	/// <typeparam name="TResult">The type of the result.</typeparam>
-	internal class FunctionInvocation<TSource, TResult> : Invocation<TSource>
+	public static class UndoManagerExtensions
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FunctionInvocation&lt;TSource, TResult&gt;"/> class.
+		/// Registers an operation into the undo history of the default <see cref="UndoManager"/>.
 		/// </summary>
-		/// <param name="target">The target on which the operation described by <paramref name="expression"/> has to be invoked.</param>
-		/// <param name="expression">The LinQ expressio describing the action to invoke.</param>
+		/// <typeparam name="TSource">The type of the source.</typeparam>
+		/// <param name="target">The target instance.</param>
+		/// <param name="selector">The invocation delegate of the undo operation.</param>
 		/// <exception cref="ArgumentNullException">
 		///		<para><paramref name="target"/> is a <see langword="null"/> reference</para>
 		///		<para>- or -</para>
-		///		<para><paramref name="expression"/> is a <see langword="null"/> reference.</para>
+		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		public FunctionInvocation(TSource target, Expression<Func<TSource, TResult>> expression)
+		public static void RegisterUndoInvocation<TSource>(this TSource target, Expression<Action<TSource>> selector)
 		{
-			if (target == null)
-			{
-				throw new ArgumentNullException("expression");
-			}
-
 			if (target == null)
 			{
 				throw new ArgumentNullException("target");
 			}
 
-			this.Target = target;
-			this.Expression = expression;
-		}
+			if (selector == null)
+			{
+				throw new ArgumentNullException("selector");
+			}
 
-		/// <summary>
-		/// Gets the expression required to invoke the operation.
-		/// </summary>
-		public Expression<Func<TSource, TResult>> Expression { get; private set; }
-
-		/// <summary>
-		/// Invokes this instance.
-		/// </summary>
-		public override void Invoke()
-		{
-			Func<TSource, TResult> func = this.Expression.Compile();
-			func(Target);
+			UndoManager.DefaultUndoManager.RegisterInvocation(target, selector);
 		}
 	}
 }

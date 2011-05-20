@@ -18,7 +18,7 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-namespace UndoRedo
+namespace UndoRedo.Invocation
 {
 	/// <summary>
 	/// The invocation class includes the selector, the receiver and the arguments to call a method of an object.

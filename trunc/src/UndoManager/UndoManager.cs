@@ -22,13 +22,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using UndoRedo.Invocation;
 
 namespace UndoRedo
 {
 	/// <summary>
 	/// The undo manager records undo operations to provide undo and redo logic.
 	/// </summary>
-	public sealed class UndoManager
+	public sealed class UndoManager : UndoRedo.IUndoManager
 	{
 		#region Constructors & Declarations
 
@@ -40,132 +41,7 @@ namespace UndoRedo
 
 		#endregion
 
-		#region Exception Save State Switch
-
-		/// <summary>
-		/// This class switchs the state of the <see cref="UndoManager"/> exception save.
-		/// </summary>
-		private class StateSwitcher : IDisposable
-		{
-			private readonly UndoManager owner;
-			private readonly UndoRedoState backup;
-
-			private bool disposed = false;
-
-			/// <summary>
-			/// Initializes a new instance of the <see cref="StateSwitcher"/> class.
-			/// </summary>
-			/// <param name="target">The target <see cref="UndoManager"/> to switch the state.</param>
-			/// <param name="state">The <see cref="UndoRedoState"/> to set on the <paramref name="target"/>.</param>
-			/// <exception cref="ArgumentNullException"><paramref name="target"/> is a <see langword="null"/> reference.</exception>
-			public StateSwitcher(UndoManager target, UndoRedoState state)
-			{
-				if (target == null)
-				{
-					throw new ArgumentNullException("target");
-				}
-
-				this.owner = target;
-
-				this.backup = this.owner.state;
-				this.owner.state = state;
-			}
-
-			#region Dispose Members
-
-			#region IDisposable Members
-
-			/// <summary>
-			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-			/// </summary>
-			public void Dispose()
-			{
-				this.Dispose(true);
-				GC.SuppressFinalize(this);
-			}
-
-			#endregion
-
-			/// <summary>
-			/// Releases unmanaged and - optionally - managed resources.
-			/// </summary>
-			/// <param name="disposing"><c>True</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-			private void Dispose(bool disposing)
-			{
-				// check to see if Dispose has already been called
-				if (!this.disposed)
-				{
-					// if IDisposable.Dispose was called, dispose all managed resources
-					if (disposing)
-					{
-						this.owner.state = this.backup;
-					}
-
-					// if Finalize or IDisposable.Dispose, free your own state (unmanaged objects)
-					this.disposed = true;
-				}
-			}
-
-			/// <summary>
-			/// Finalizes an instance of the <see cref="StateSwitcher"/> class.
-			/// </summary>
-			/// <remark>
-			/// Releases unmanaged resources and performs other cleanup operations before the
-			/// <see cref="StateSwitcher"/> is reclaimed by garbage collection.
-			/// </remark>
-			~StateSwitcher()
-			{
-				this.Dispose(false);
-			}
-
-			#endregion
-		}
-
-		#endregion
-
-		#region Signleton Creator
-
-		/// <summary>
-		/// Internal class to support lazy initialization.
-		/// </summary>
-		private class SingletonCreator
-		{
-			/// <summary>
-			/// Initializes static members of the <see cref="SingletonCreator"/> class.
-			/// </summary>
-			static SingletonCreator()
-			{
-			}
-
-			/// <summary>
-			/// Prevents a default instance of the <see cref="SingletonCreator"/> class from being created.
-			/// </summary>
-			private SingletonCreator()
-			{
-			}
-
-			/// <summary>
-			/// Threadsafe implementation (compiler guaranteed whith static initializatrion).
-			/// This implementation uses an inner class to make the .NET instantiation fully lazy.
-			/// </summary>
-			internal static readonly UndoManager Instance = new UndoManager();
-		}
-
-		/// <summary>
-		/// Gets the default undo manager.
-		/// </summary>
-		/// <value>The default undo manager.</value>
-		public static UndoManager DefaultUndoManager
-		{
-			get
-			{
-				return SingletonCreator.Instance;
-			}
-		}
-
-		#endregion
-
-		#region Public Members
+		#region IUndoManager members
 
 		/// <summary>
 		/// Gets a value indicating whether the <see cref="UndoManager"/> is undoing.
@@ -365,6 +241,131 @@ namespace UndoRedo
 		private Transaction RecordingTransaction()
 		{
 			return this.transactionStack.Count > 0 ? this.transactionStack.Peek() : null;
+		}
+
+		#endregion
+
+		#region Exception Save State Switch
+
+		/// <summary>
+		/// This class switchs the state of the <see cref="UndoManager"/> exception save.
+		/// </summary>
+		private class StateSwitcher : IDisposable
+		{
+			private readonly UndoManager owner;
+			private readonly UndoRedoState backup;
+
+			private bool disposed = false;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="StateSwitcher"/> class.
+			/// </summary>
+			/// <param name="target">The target <see cref="UndoManager"/> to switch the state.</param>
+			/// <param name="state">The <see cref="UndoRedoState"/> to set on the <paramref name="target"/>.</param>
+			/// <exception cref="ArgumentNullException"><paramref name="target"/> is a <see langword="null"/> reference.</exception>
+			public StateSwitcher(UndoManager target, UndoRedoState state)
+			{
+				if (target == null)
+				{
+					throw new ArgumentNullException("target");
+				}
+
+				this.owner = target;
+
+				this.backup = this.owner.state;
+				this.owner.state = state;
+			}
+
+			#region Dispose Members
+
+			#region IDisposable Members
+
+			/// <summary>
+			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+			/// </summary>
+			public void Dispose()
+			{
+				this.Dispose(true);
+				GC.SuppressFinalize(this);
+			}
+
+			#endregion
+
+			/// <summary>
+			/// Releases unmanaged and - optionally - managed resources.
+			/// </summary>
+			/// <param name="disposing"><c>True</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+			private void Dispose(bool disposing)
+			{
+				// check to see if Dispose has already been called
+				if (!this.disposed)
+				{
+					// if IDisposable.Dispose was called, dispose all managed resources
+					if (disposing)
+					{
+						this.owner.state = this.backup;
+					}
+
+					// if Finalize or IDisposable.Dispose, free your own state (unmanaged objects)
+					this.disposed = true;
+				}
+			}
+
+			/// <summary>
+			/// Finalizes an instance of the <see cref="StateSwitcher"/> class.
+			/// </summary>
+			/// <remark>
+			/// Releases unmanaged resources and performs other cleanup operations before the
+			/// <see cref="StateSwitcher"/> is reclaimed by garbage collection.
+			/// </remark>
+			~StateSwitcher()
+			{
+				this.Dispose(false);
+			}
+
+			#endregion
+		}
+
+		#endregion
+
+		#region Signleton Creator
+
+		/// <summary>
+		/// Internal class to support lazy initialization.
+		/// </summary>
+		private class SingletonCreator
+		{
+			/// <summary>
+			/// Initializes static members of the <see cref="SingletonCreator"/> class.
+			/// </summary>
+			static SingletonCreator()
+			{
+			}
+
+			/// <summary>
+			/// Prevents a default instance of the <see cref="SingletonCreator"/> class from being created.
+			/// </summary>
+			private SingletonCreator()
+			{
+			}
+
+			/// <summary>
+			/// Threadsafe implementation (compiler guaranteed whith static initializatrion).
+			/// This implementation uses an inner class to make the .NET instantiation fully lazy.
+			/// </summary>
+			internal static readonly UndoManager Instance = new UndoManager();
+		}
+
+		/// <summary>
+		/// Gets the default undo manager.
+		/// </summary>
+		/// <value>The default undo manager.</value>
+		public static UndoManager DefaultUndoManager
+		{
+			get
+			{
+				return SingletonCreator.Instance;
+			}
 		}
 
 		#endregion
