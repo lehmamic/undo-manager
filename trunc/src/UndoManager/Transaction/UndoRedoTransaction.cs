@@ -23,23 +23,23 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using UndoRedo.Invocation;
 
-namespace UndoRedo
+namespace UndoRedo.Transaction
 {
 	/// <summary>
-	/// A <see cref="Transaction"/> records the undo operations, which are registered in the <see cref="UndoManager"/> while commiting the <see cref="Transaction"/>.
+	/// A <see cref="UndoRedoTransaction"/> records the undo operations, which are registered in the <see cref="UndoManager"/> while commiting the <see cref="UndoRedoTransaction"/>.
 	/// </summary>
-	public sealed class Transaction : IInvokable, IDisposable
+	public sealed class UndoRedoTransaction : ITransaction, IInvokable
 	{
 		private readonly Stack<IInvokable> invokables = new Stack<IInvokable>();
 		private readonly UndoManager owner;
 		private bool disposed = false;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Transaction"/> class.
+		/// Initializes a new instance of the <see cref="UndoRedoTransaction"/> class.
 		/// </summary>
 		/// <param name="undoManager">The undo manager.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="undoManager"/> is a <see langword="null"/> reference.</exception>
-		internal Transaction(UndoManager undoManager)
+		internal UndoRedoTransaction(UndoManager undoManager)
 		{
 			if (undoManager == null)
 			{
@@ -50,7 +50,7 @@ namespace UndoRedo
 		}
 
 		/// <summary>
-		/// Adds an operation to the <see cref="Transaction"/>.
+		/// Registers an operation to the <see cref="UndoRedoTransaction"/>.
 		/// </summary>
 		/// <typeparam name="TSource">The type of the source.</typeparam>
 		/// <param name="target">The target of the undo operation.</param>
@@ -60,7 +60,7 @@ namespace UndoRedo
 		///		<para>- or -</para>
 		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		public void Add<TSource>(TSource target, Expression<Action<TSource>> selector)
+		public void RegisterInvocation<TSource>(TSource target, Expression<Action<TSource>> selector)
 		{
 			if (target == null)
 			{
@@ -77,11 +77,11 @@ namespace UndoRedo
 		}
 
 		/// <summary>
-		/// Adds a child <see cref="Transaction"/> instance.
+		/// Adds a child <see cref="UndoRedoTransaction"/> instance.
 		/// </summary>
-		/// <param name="transaction">The child <see cref="Transaction"/> to add.</param>
+		/// <param name="transaction">The child <see cref="UndoRedoTransaction"/> to add.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
-		public void Add(Transaction transaction)
+		public void Add(UndoRedoTransaction transaction)
 		{
 			if (transaction == null)
 			{
@@ -92,7 +92,7 @@ namespace UndoRedo
 		}
 
 		/// <summary>
-		/// Gets the number of selectors registered in the <see cref="Transaction"/>.
+		/// Gets the number of selectors registered in the <see cref="UndoRedoTransaction"/>.
 		/// </summary>
 		/// <value>The count.</value>
 		public int Count
@@ -100,8 +100,10 @@ namespace UndoRedo
 			get { return this.invokables.Count; }
 		}
 
+		#region ITransaction members
+
 		/// <summary>
-		/// Commits the undo operation of this <see cref="Transaction"/>.
+		/// Commits the undo operation of this <see cref="ITransaction"/>.
 		/// </summary>
 		public void Commit()
 		{
@@ -109,17 +111,19 @@ namespace UndoRedo
 		}
 
 		/// <summary>
-		/// Rollbacks the transaction and calls the undo operations to recover the state befor the <see cref="Transaction"/> has been created.
+		/// Rollbacks the transaction and calls the undo operations to recover the state befor the <see cref="ITransaction"/> has been created.
 		/// </summary>
 		public void Rollback()
 		{
 			this.owner.RollbackTransaction();
 		}
 
-		#region IInvokable Members
+		#endregion
+
+		#region IInvokable members
 
 		/// <summary>
-		/// Invokes all registered commands of this <see cref="Transaction"/>.
+		/// Invokes all registered commands of this <see cref="UndoRedoTransaction"/>.
 		/// </summary>
 		public void Invoke()
 		{
@@ -132,7 +136,7 @@ namespace UndoRedo
 
 		#endregion
 
-		#region Dispose Members
+		#region Dispose members
 
 		#region IDisposable Members
 
@@ -168,13 +172,13 @@ namespace UndoRedo
 		}
 
 		/// <summary>
-		/// Finalizes an instance of the <see cref="Transaction"/> class.
+		/// Finalizes an instance of the <see cref="UndoRedoTransaction"/> class.
 		/// </summary>
 		/// <remark>
 		/// Releases unmanaged resources and performs other cleanup operations before the
-		/// <see cref="Transaction"/> is reclaimed by garbage collection.
+		/// <see cref="UndoRedoTransaction"/> is reclaimed by garbage collection.
 		/// </remark>
-		~Transaction()
+		~UndoRedoTransaction()
 		{
 			this.Dispose(false);
 		}

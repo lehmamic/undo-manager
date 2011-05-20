@@ -22,6 +22,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using UndoRedo;
+using UndoRedo.Transaction;
 
 namespace UndoManagerTest
 {
@@ -270,13 +271,13 @@ namespace UndoManagerTest
 			UndoManager target = new UndoManager();
 			Mock<ITarget> testMock = new Mock<ITarget>(MockBehavior.Strict);
 
-			Transaction parent = target.CreateTransaction();
+			ITransaction parent = target.CreateTransaction();
 			using (target.CreateTransaction())
 			{
 				target.RegisterInvocation<ITarget>(testMock.Object, p => p.UndoOperation());
 			}
 
-			Assert.AreEqual(1, parent.Count);
+			Assert.AreEqual(1, ((UndoRedoTransaction)parent).Count);
 			Assert.IsTrue(target.CanUndo);
 			Assert.IsFalse(target.CanRedo);
 		}
@@ -287,14 +288,14 @@ namespace UndoManagerTest
 			UndoManager target = new UndoManager();
 			Mock<ITarget> testMock = new Mock<ITarget>(MockBehavior.Strict);
 
-			Transaction parent = target.CreateTransaction();
+			ITransaction parent = target.CreateTransaction();
 			using (target.CreateTransaction())
 			{
 				target.RegisterInvocation<ITarget>(testMock.Object, p => p.UndoOperation());
 			}
 
 			target.CommitTransaction();
-			Assert.AreEqual(1, parent.Count);
+			Assert.AreEqual(1, ((UndoRedoTransaction)parent).Count);
 			Assert.IsTrue(target.CanUndo);
 			Assert.IsFalse(target.CanRedo);
 		}
@@ -362,14 +363,14 @@ namespace UndoManagerTest
 			Mock<ITarget> testMock = new Mock<ITarget>(MockBehavior.Strict);
 			testMock.Setup(p => p.UndoOperation());
 
-			Transaction parent = target.CreateTransaction();
+			ITransaction parent = target.CreateTransaction();
 			target.CreateTransaction();
 			target.RegisterInvocation<ITarget>(testMock.Object, p => p.UndoOperation());
 
 			target.RollbackTransaction();
 
 			testMock.Verify(p => p.UndoOperation(), Times.Once());
-			Assert.AreEqual(0, parent.Count);
+			Assert.AreEqual(0, ((UndoRedoTransaction)parent).Count);
 			Assert.IsTrue(target.CanUndo);
 			Assert.IsFalse(target.CanRedo);
 		}

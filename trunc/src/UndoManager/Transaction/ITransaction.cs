@@ -18,31 +18,23 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-namespace UndoRedo
+using System;
+
+namespace UndoRedo.Transaction
 {
 	/// <summary>
-	/// Indicates the state of the <see cref="UndoManager"/>.
+	/// Transaction interface for handling the undo redo transactions.
 	/// </summary>
-	internal enum UndoRedoState
+	public interface ITransaction : IDisposable
 	{
 		/// <summary>
-		/// The <see cref="UndoManager"/> is recording.
+		/// Commits the undo operation of this <see cref="ITransaction"/>.
 		/// </summary>
-		Recording,
+		void Commit();
 
 		/// <summary>
-		/// The <see cref="UndoManager"/> is undoing.
+		/// Rollbacks the transaction and calls the undo operations to recover the state befor the <see cref="ITransaction"/> has been created.
 		/// </summary>
-		Undoing,
-
-		/// <summary>
-		/// The <see cref="UndoManager"/> is redoing.
-		/// </summary>
-		Redoing,
-
-		/// <summary>
-		/// The <see cref="UndoManager"/> is rolling back an open <see cref="Transaction"/>.
-		/// </summary>
-		RollingBackTransaction
+		void Rollback();
 	}
 }

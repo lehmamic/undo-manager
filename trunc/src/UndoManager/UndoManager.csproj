@@ -83,6 +83,9 @@
     <Compile Include="Invocation\ActionInvocation.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Transaction\ITransaction.cs" />
+    <Compile Include="State\IStateHost.cs" />
+    <Compile Include="State\StateSwitcher.cs" />
     <Compile Include="UndoManagerExtensions.cs" />
     <Compile Include="Invocation\FunctionInvocation.cs">
       <SubType>Code</SubType>
@@ -93,9 +96,9 @@
     </Compile>
     <Compile Include="IUndoManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Transaction.cs" />
+    <Compile Include="Transaction\UndoRedoTransaction.cs" />
     <Compile Include="UndoManager.cs" />
-    <Compile Include="UndoRedoState.cs" />
+    <Compile Include="State\UndoRedoState.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -118,9 +121,7 @@
     <None Include="UndoManager.cd" />
     <None Include="Properties\UndoManager.snk" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interopt\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
