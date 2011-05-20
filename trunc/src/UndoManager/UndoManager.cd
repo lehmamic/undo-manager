@@ -8,7 +8,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="UndoRedo.Invocation.FunctionInvocation&lt;TSource, TResult&gt;">
-    <Position X="10.25" Y="2.5" Width="1.5" />
+    <Position X="10.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAA=</HashCode>
       <FileName>Invocation\FunctionInvocation.cs</FileName>
@@ -17,18 +17,10 @@
   <Class Name="UndoRedo.Invocation.Invocation&lt;TSource&gt;">
     <Position X="9" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAIAAAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAIAAAAAAAEACAAAAAAAAAAAAAEAAAAAAA=</HashCode>
       <FileName>Invocation\Invocation.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="UndoRedo.Transaction" BaseTypeListCollapsed="true">
-    <Position X="6" Y="2" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAIAAEAAACAIgAACAAAAAAQAAAAAAAAAAEAAAAAAAAA=</HashCode>
-      <FileName>Transaction.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="UndoRedo.UndoManager">
     <Position X="3.5" Y="0.5" Width="2.25" />
@@ -36,50 +28,74 @@
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
-      <Class Name="UndoRedo.UndoManager.StateSwitcher" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>UndoManager.cs</NewMemberFileName>
-        </TypeIdentifier>
-        <Lollipop Position="0.2" />
-      </Class>
-      <Class Name="UndoRedo.UndoManager.SingletonCreator" Collapsed="true">
+      <Class Name="UndoRedo.UndoManager.SingletonCreator">
         <TypeIdentifier>
           <NewMemberFileName>UndoManager.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAQAABAAJAAABAAAAAAQAgBDAAAAAAAEAAAAAAEC4BE=</HashCode>
+      <HashCode>AEwAABAAJAAABAAAAAAQAghHAAAAIACEAAABQAEC4BE=</HashCode>
       <FileName>UndoManager.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="UndoRedo.UndoManagerExtensions">
-    <Position X="0.5" Y="3.75" Width="2.5" />
+    <Position X="0.5" Y="4.5" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>UndoManagerExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="UndoRedo.Transaction.UndoRedoTransaction">
+    <Position X="8.25" Y="4.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAFAAACAIgAACAAAEAAQAAAAAAAAAAEAEAAAAAAA=</HashCode>
+      <FileName>Transaction\UndoRedoTransaction.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UndoRedo.State.StateSwitcher">
+    <Position X="10.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAIAACAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>State\StateSwitcher.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Interface Name="UndoRedo.Invocation.IInvokable">
     <Position X="6" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
       <FileName>Invocation\IInvokable.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="UndoRedo.IUndoManager">
     <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAABAAJAAABAAAAAAQAAADAAAAAAAAAAAAAAEAoAA=</HashCode>
+      <HashCode>AAgAABAAJAAABAAAAAAQAAADAAAAIAAAAAABQAEA4AA=</HashCode>
       <FileName>IUndoManager.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="UndoRedo.UndoRedoState">
+  <Interface Name="UndoRedo.Transaction.ITransaction">
+    <Position X="6" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Transaction\ITransaction.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="UndoRedo.State.IStateHost">
+    <Position X="6" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>State\IStateHost.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="UndoRedo.State.UndoRedoState">
     <Position X="6" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAIAAAAAAAAQAAACAA=</HashCode>
-      <FileName>UndoRedoState.cs</FileName>
+      <FileName>State\UndoRedoState.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Tahoma" Size="8.25" />
