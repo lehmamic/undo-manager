@@ -20,6 +20,7 @@
 
 using System;
 using System.Linq.Expressions;
+using UndoRedo.Transaction;
 
 namespace UndoRedo
 {
@@ -29,41 +30,41 @@ namespace UndoRedo
 	public interface IUndoManager
 	{
 		/// <summary>
-		/// Gets a value indicating whether the <see cref="UndoManager"/> can perform an redo operation.
+		/// Gets a value indicating whether the <see cref="IUndoManager"/> can perform an redo operation.
 		/// </summary>
-		/// <value><c>True</c> if the <see cref="UndoManager"/> can perform an redo operation, <c>false</c>.</value>
+		/// <value><c>True</c> if the <see cref="IUndoManager"/> can perform an redo operation, <c>false</c>.</value>
 		bool CanRedo { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether the <see cref="UndoManager"/> can perform an undo operation.
+		/// Gets a value indicating whether the <see cref="IUndoManager"/> can perform an undo operation.
 		/// </summary>
-		/// <value><c>True</c> if the <see cref="UndoManager"/> can perform an undo operation; otherwise, <c>false</c>.</value>
+		/// <value><c>True</c> if the <see cref="IUndoManager"/> can perform an undo operation; otherwise, <c>false</c>.</value>
 		bool CanUndo { get; }
 
 		/// <summary>
-		/// Commits the created <see cref="Transaction"/> and records the registered undo operation in the <see cref="UndoManager"/>.
+		/// Commits the created <see cref="ITransaction"/> and records the registered undo operation in the <see cref="IUndoManager"/>.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">No open <see cref="Transaction"/> to commit available.</exception>
+		/// <exception cref="InvalidOperationException">No open <see cref="ITransaction"/> to commit available.</exception>
 		void CommitTransaction();
 
 		/// <summary>
-		/// Creates a <see cref="Transaction"/> for recording the undo operations. Undo operations
-		/// which are recorded while a <see cref="Transaction"/> is opened get recorded by the <see cref="UndoManager"/> only if the <see cref="Transaction"/>
-		/// is commited. A rollback will execute the undo operations which where registered while the <see cref="Transaction"/> has been open.
+		/// Creates an <see cref="ITransaction"/> for recording the undo operations. Undo operations
+		/// which are recorded while a <see cref="ITransaction"/> is opened get recorded by the <see cref="UndoManager"/> only if the <see cref="ITransaction"/>
+		/// is commited. A rollback will execute the undo operations which where registered while the <see cref="ITransaction"/> has been open.
 		/// </summary>
-		/// <returns>A new instance of the <see cref="Transaction"/> class.</returns>
-		Transaction CreateTransaction();
+		/// <returns>A new object implementing the <see cref="ITransaction"/> interface.</returns>
+		ITransaction CreateTransaction();
 
 		/// <summary>
-		/// Gets a value indicating whether the <see cref="UndoManager"/> is redoing.
+		/// Gets a value indicating whether the <see cref="IUndoManager"/> is redoing.
 		/// </summary>
 		/// <value>
-		/// 	<c>True</c> if the <see cref="UndoManager"/> is redoing; otherwise, <c>false</c>.
+		/// 	<c>True</c> if the <see cref="IUndoManager"/> is redoing; otherwise, <c>false</c>.
 		/// </value>
 		bool IsRedoing { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether the <see cref="UndoManager"/> is undoing.
+		/// Gets a value indicating whether the <see cref="IUndoManager"/> is undoing.
 		/// </summary>
 		/// <value>
 		/// 	<c>True</c> if the <see cref="UndoManager"/> is undoing; otherwise, <c>false</c>.
@@ -89,7 +90,7 @@ namespace UndoRedo
 		void RegisterInvocation<TSource>(TSource target, Expression<Action<TSource>> selector);
 
 		/// <summary>
-		/// Rollbacks the last created <see cref="Transaction"/> and invokes the regsitered undo operations.
+		/// Rollbacks the last created <see cref="ITransaction"/> and invokes the regsitered undo operations.
 		/// </summary>
 		void RollbackTransaction();
 

@@ -23,21 +23,39 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using UndoRedo.Invocation;
+using UndoRedo.State;
+using UndoRedo.Transaction;
 
 namespace UndoRedo
 {
 	/// <summary>
 	/// The undo manager records undo operations to provide undo and redo logic.
 	/// </summary>
-	public sealed class UndoManager : UndoRedo.IUndoManager
+	public sealed class UndoManager : IUndoManager, IStateHost
 	{
-		#region Constructors & Declarations
-
 		private readonly Stack<IInvokable> undoHistory = new Stack<IInvokable>();
 		private readonly Stack<IInvokable> redoHistory = new Stack<IInvokable>();
-		private readonly Stack<Transaction> transactionStack = new Stack<Transaction>();
+		private readonly Stack<UndoRedoTransaction> transactionStack = new Stack<UndoRedoTransaction>();
 
 		private UndoRedoState state = UndoRedoState.Recording;
+
+		#region IStateHost members
+
+		/// <summary>
+		/// The <see cref="UndoRedoState"/> indicating the status of the <see cref="UndoRedo.UndoManager"/>.
+		/// </summary>
+		UndoRedoState IStateHost.State
+		{
+			get
+			{
+				return this.state;
+			}
+
+			set
+			{
+				this.state = value;
+			}
+		}
 
 		#endregion
 
@@ -108,16 +126,16 @@ namespace UndoRedo
 
 			if (this.state != UndoRedoState.RollingBackTransaction)
 			{
-				Transaction recordingTransaction = this.RecordingTransaction();
+				UndoRedoTransaction recordingTransaction = this.RecordingTransaction();
 				if (recordingTransaction != null)
 				{
-					recordingTransaction.Add(target, selector);
+					recordingTransaction.RegisterInvocation(target, selector);
 				}
 				else
 				{
-					using (Transaction transaction = this.CreateTransaction())
+					using (UndoRedoTransaction transaction = this.InnerCreateTransaction())
 					{
-						transaction.Add(target, selector);
+						transaction.RegisterInvocation(target, selector);
 					}
 				}
 			}
@@ -163,23 +181,20 @@ namespace UndoRedo
 		}
 
 		/// <summary>
-		/// Creates a <see cref="Transaction"/> for recording the undo operations. Undo operations
-		/// which are recorded while a <see cref="Transaction"/> is opened get recorded by the <see cref="UndoManager"/> only if the <see cref="Transaction"/>
-		/// is commited. A rollback will execute the undo operations which where registered while the <see cref="Transaction"/> has been open.
+		/// Creates a <see cref="ITransaction"/> for recording the undo operations. Undo operations
+		/// which are recorded while a <see cref="ITransaction"/> is opened get recorded by the <see cref="UndoManager"/> only if the <see cref="ITransaction"/>
+		/// is commited. A rollback will execute the undo operations which where registered while the <see cref="ITransaction"/> has been open.
 		/// </summary>
-		/// <returns>A new instance of the <see cref="Transaction"/> class.</returns>
-		public Transaction CreateTransaction()
+		/// <returns>A new instance of the <see cref="ITransaction"/> class.</returns>
+		public ITransaction CreateTransaction()
 		{
-			Transaction transaction = new Transaction(this);
-			this.transactionStack.Push(transaction);
-
-			return transaction;
+			return this.InnerCreateTransaction();
 		}
 
 		/// <summary>
-		/// Commits the created <see cref="Transaction"/> and records the registered undo operation in the <see cref="UndoManager"/>.
+		/// Commits the created <see cref="ITransaction"/> and records the registered undo operation in the <see cref="UndoManager"/>.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">No open <see cref="Transaction"/> to commit available.</exception>
+		/// <exception cref="InvalidOperationException">No open <see cref="ITransaction"/> to commit available.</exception>
 		public void CommitTransaction()
 		{
 			if (this.transactionStack.Count == 0)
@@ -187,7 +202,7 @@ namespace UndoRedo
 				throw new InvalidOperationException("There is no open transaction available to commit.");
 			}
 
-			Transaction transaction = this.transactionStack.Pop();
+			UndoRedoTransaction transaction = this.transactionStack.Pop();
 
 			if (transaction.Count > 0)
 			{
@@ -205,7 +220,7 @@ namespace UndoRedo
 			{
 				using (new StateSwitcher(this, UndoRedoState.RollingBackTransaction))
 				{
-					Transaction transactionToRollback = this.transactionStack.Pop();
+					UndoRedoTransaction transactionToRollback = this.transactionStack.Pop();
 					transactionToRollback.Invoke();
 				}
 			}
@@ -215,16 +230,24 @@ namespace UndoRedo
 
 		#region Private Members
 
+		private UndoRedoTransaction InnerCreateTransaction()
+		{
+			UndoRedoTransaction transaction = new UndoRedoTransaction(this);
+			this.transactionStack.Push(transaction);
+
+			return transaction;
+		}
+
 		private void CommitOpenTransactions()
 		{
 			while (this.transactionStack.Count > 0)
 			{
-				Transaction transaction = this.transactionStack.Peek();
+				UndoRedoTransaction transaction = this.transactionStack.Peek();
 				transaction.Commit();
 			}
 		}
 
-		private void ProcessTransactionToCommit(Transaction transaction)
+		private void ProcessTransactionToCommit(UndoRedoTransaction transaction)
 		{
 			if (this.transactionStack.Count == 0)
 			{
@@ -233,97 +256,14 @@ namespace UndoRedo
 			}
 			else
 			{
-				Transaction parent = this.transactionStack.Peek();
+				UndoRedoTransaction parent = this.transactionStack.Peek();
 				parent.Add(transaction);
 			}
 		}
 
-		private Transaction RecordingTransaction()
+		private UndoRedoTransaction RecordingTransaction()
 		{
 			return this.transactionStack.Count > 0 ? this.transactionStack.Peek() : null;
-		}
-
-		#endregion
-
-		#region Exception Save State Switch
-
-		/// <summary>
-		/// This class switchs the state of the <see cref="UndoManager"/> exception save.
-		/// </summary>
-		private class StateSwitcher : IDisposable
-		{
-			private readonly UndoManager owner;
-			private readonly UndoRedoState backup;
-
-			private bool disposed = false;
-
-			/// <summary>
-			/// Initializes a new instance of the <see cref="StateSwitcher"/> class.
-			/// </summary>
-			/// <param name="target">The target <see cref="UndoManager"/> to switch the state.</param>
-			/// <param name="state">The <see cref="UndoRedoState"/> to set on the <paramref name="target"/>.</param>
-			/// <exception cref="ArgumentNullException"><paramref name="target"/> is a <see langword="null"/> reference.</exception>
-			public StateSwitcher(UndoManager target, UndoRedoState state)
-			{
-				if (target == null)
-				{
-					throw new ArgumentNullException("target");
-				}
-
-				this.owner = target;
-
-				this.backup = this.owner.state;
-				this.owner.state = state;
-			}
-
-			#region Dispose Members
-
-			#region IDisposable Members
-
-			/// <summary>
-			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-			/// </summary>
-			public void Dispose()
-			{
-				this.Dispose(true);
-				GC.SuppressFinalize(this);
-			}
-
-			#endregion
-
-			/// <summary>
-			/// Releases unmanaged and - optionally - managed resources.
-			/// </summary>
-			/// <param name="disposing"><c>True</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-			private void Dispose(bool disposing)
-			{
-				// check to see if Dispose has already been called
-				if (!this.disposed)
-				{
-					// if IDisposable.Dispose was called, dispose all managed resources
-					if (disposing)
-					{
-						this.owner.state = this.backup;
-					}
-
-					// if Finalize or IDisposable.Dispose, free your own state (unmanaged objects)
-					this.disposed = true;
-				}
-			}
-
-			/// <summary>
-			/// Finalizes an instance of the <see cref="StateSwitcher"/> class.
-			/// </summary>
-			/// <remark>
-			/// Releases unmanaged resources and performs other cleanup operations before the
-			/// <see cref="StateSwitcher"/> is reclaimed by garbage collection.
-			/// </remark>
-			~StateSwitcher()
-			{
-				this.Dispose(false);
-			}
-
-			#endregion
 		}
 
 		#endregion
