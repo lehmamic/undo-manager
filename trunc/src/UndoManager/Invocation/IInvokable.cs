@@ -29,5 +29,10 @@ namespace UndoRedo.Invocation
 		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.
 		/// </summary>
 		void Invoke();
+
+		/// <summary>
+		/// Name of the action, which is performed with this invocation.
+		/// </summary>
+		string ActionName { get; set; }
 	}
 }

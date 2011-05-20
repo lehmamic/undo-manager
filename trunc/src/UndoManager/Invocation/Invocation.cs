@@ -26,6 +26,8 @@ namespace UndoRedo.Invocation
 	/// <typeparam name="TSource">The type of the source.</typeparam>
 	internal abstract class Invocation<TSource> : IInvokable
 	{
+		private string actionName = string.Empty;
+
 		/// <summary>
 		/// Gets or sets the target of the invocation.
 		/// </summary>
@@ -37,6 +39,22 @@ namespace UndoRedo.Invocation
 		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.
 		/// </summary>
 		public abstract void Invoke();
+
+		/// <summary>
+		/// Name of the action, which is performed with this invocation.
+		/// </summary>
+		public string ActionName
+		{
+			get
+			{
+				return this.actionName;
+			}
+
+			set
+			{
+				this.actionName = value != null ? value : string.Empty;
+			}
+		}
 
 		#endregion
 	}
