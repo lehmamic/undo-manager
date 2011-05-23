@@ -97,9 +97,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IUndoManager.Extensions.cs" />
-    <Compile Include="Invocation\FunctionInvocation.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Invocation\IInvokable.cs" />
     <Compile Include="Invocation\Invocation.cs">
       <SubType>Code</SubType>
