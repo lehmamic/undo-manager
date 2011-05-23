@@ -23,18 +23,24 @@ using System;
 namespace Diskordia.UndoRedo.Transaction
 {
 	/// <summary>
-	/// Transaction interface for handling the undo redo transactions.
+	/// Interface for the ndo manager to encapsulate the transaction - undo manager interaction.
 	/// </summary>
-	public interface ITransaction : IDisposable
+	internal interface ITransactionManager
 	{
 		/// <summary>
-		/// Commits the undo operation of this <see cref="ITransaction"/>.
+		/// Commits the provided transaction.
 		/// </summary>
-		void Commit();
+		/// <param name="transaction">The transaction to commit.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
+		/// <exception cref="ArgumentException">The <see cref="UndoManager"/> does not contain <paramref name="transaction"/>.</exception>
+		void CommitTransaction(IInvokableTransaction transaction);
 
 		/// <summary>
-		/// Rollbacks the transaction and calls the undo operations to recover the state befor the <see cref="ITransaction"/> has been created.
+		/// Rollbacks the provided transaction.
 		/// </summary>
-		void Rollback();
+		/// <param name="transaction">The transaction to roll back.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
+		/// <exception cref="ArgumentException">The <see cref="UndoManager"/> does not contain <paramref name="transaction"/>.</exception>
+		void RollbackTransaction(IInvokableTransaction transaction);
 	}
 }

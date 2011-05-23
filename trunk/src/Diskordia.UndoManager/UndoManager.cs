@@ -34,11 +34,11 @@ namespace Diskordia.UndoRedo
 	/// <summary>
 	/// The undo manager records undo operations to provide undo and redo logic.
 	/// </summary>
-	public sealed partial class UndoManager : IUndoManager, IStateHost
+	public sealed partial class UndoManager : IUndoManager, ITransactionManager, IStateHost
 	{
-		private readonly Stack<IInvokable> undoHistory = new Stack<IInvokable>();
-		private readonly Stack<IInvokable> redoHistory = new Stack<IInvokable>();
-		private readonly Stack<UndoRedoTransaction> transactionStack = new Stack<UndoRedoTransaction>();
+		private readonly Stack<IInvokableTransaction> undoHistory = new Stack<IInvokableTransaction>();
+		private readonly Stack<IInvokableTransaction> redoHistory = new Stack<IInvokableTransaction>();
+		private readonly Stack<IInvokableTransaction> openTransactions = new Stack<IInvokableTransaction>();
 
 		private UndoRedoState state = UndoRedoState.Idle;
 		private string actionName = string.Empty;
@@ -93,7 +93,7 @@ namespace Diskordia.UndoRedo
 		/// <value><c>True</c> if the <see cref="UndoManager"/> can perform an undo operation; otherwise, <c>false</c>.</value>
 		public bool CanUndo
 		{
-			get { return this.undoHistory.Any() || this.transactionStack.Any(); }
+			get { return this.undoHistory.Any() || this.openTransactions.Any(); }
 		}
 
 		/// <summary>
@@ -130,14 +130,14 @@ namespace Diskordia.UndoRedo
 
 			if (this.state != UndoRedoState.RollingBack)
 			{
-				UndoRedoTransaction recordingTransaction = this.FetchRecordingTransaction();
+				IInvokableTransaction recordingTransaction = this.FetchRecordingTransaction();
 				if (recordingTransaction != null)
 				{
 					recordingTransaction.RegisterInvokation(target, selector);
 				}
 				else
 				{
-					using (UndoRedoTransaction transaction = this.InnerCreateTransaction())
+					using (IInvokableTransaction transaction = this.InnerCreateTransaction(this.actionName))
 					{
 						transaction.RegisterInvokation(target, selector);
 					}
@@ -159,9 +159,10 @@ namespace Diskordia.UndoRedo
 
 			using (new StateSwitcher(this, UndoRedoState.Undoing))
 			{
-				using (this.CreateTransaction())
+				IInvokableTransaction invocableToUndo = this.undoHistory.Pop();
+
+				using (this.InnerCreateTransaction(invocableToUndo.ActionName))
 				{
-					IInvokable invocableToUndo = this.undoHistory.Pop();
 					invocableToUndo.Invoke();
 				}
 			}
@@ -179,8 +180,12 @@ namespace Diskordia.UndoRedo
 
 			using (new StateSwitcher(this, UndoRedoState.Redoing))
 			{
-				IInvokable invocableToRedo = this.redoHistory.Pop();
-				invocableToRedo.Invoke();
+				IInvokableTransaction invocableToRedo = this.redoHistory.Pop();
+
+				using (this.InnerCreateTransaction(invocableToRedo.ActionName))
+				{
+					invocableToRedo.Invoke();
+				}
 			}
 		}
 
@@ -192,7 +197,7 @@ namespace Diskordia.UndoRedo
 		/// <returns>A new instance of the <see cref="ITransaction"/> class.</returns>
 		public ITransaction CreateTransaction()
 		{
-			return this.InnerCreateTransaction();
+			return this.InnerCreateTransaction(this.actionName);
 		}
 
 		/// <summary>
@@ -201,13 +206,13 @@ namespace Diskordia.UndoRedo
 		/// <exception cref="InvalidOperationException">No open <see cref="ITransaction"/> to commit available.</exception>
 		public void CommitTransactions()
 		{
-			if (!this.transactionStack.Any())
+			if (!this.openTransactions.Any())
 			{
 				throw new InvalidOperationException("There is no open transaction available to commit.");
 			}
 
-			UndoRedoTransaction transaction = this.transactionStack.First();
-			this.CommitTransaction(transaction);
+			IInvokableTransaction transaction = this.openTransactions.First();
+			transaction.Commit();
 		}
 
 		/// <summary>
@@ -215,13 +220,13 @@ namespace Diskordia.UndoRedo
 		/// </summary>
 		public void RollbackTransactions()
 		{
-			if (!this.transactionStack.Any())
+			if (!this.openTransactions.Any())
 			{
 				throw new InvalidOperationException("There is no open transaction available to roll back.");
 			}
 
-			UndoRedoTransaction transaction = this.transactionStack.First();
-			this.RollbackTransaction(transaction);
+			IInvokableTransaction transaction = this.openTransactions.First();
+			transaction.Rollback();
 		}
 
 		/// <summary>
@@ -241,7 +246,7 @@ namespace Diskordia.UndoRedo
 
 			this.actionName = actionName;
 
-			UndoRedoTransaction currentTransaction = this.transactionStack.FirstOrDefault();
+			IInvokableTransaction currentTransaction = this.openTransactions.FirstOrDefault();
 			if (currentTransaction != null)
 			{
 				currentTransaction.ActionName = actionName;
@@ -288,7 +293,7 @@ namespace Diskordia.UndoRedo
 
 		#endregion
 
-		#region Internal members
+		#region ITransactionManager members
 
 		/// <summary>
 		/// Commits the provided transaction.
@@ -296,33 +301,33 @@ namespace Diskordia.UndoRedo
 		/// <param name="transaction">The transaction to commit.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
 		/// <exception cref="ArgumentException">The <see cref="UndoManager"/> does not contain <paramref name="transaction"/>.</exception>
-		internal void CommitTransaction(UndoRedoTransaction transaction)
+		void ITransactionManager.CommitTransaction(IInvokableTransaction transaction)
 		{
 			if (transaction == null)
 			{
 				throw new ArgumentNullException("transaction");
 			}
 
-			if (!this.transactionStack.Contains(transaction))
+			if (!this.openTransactions.Contains(transaction))
 			{
 				throw new ArgumentException("Can not find the transaction to commit", "transaction");
 			}
 
 			using (new StateSwitcher(this, UndoRedoState.Committing))
 			{
-				while (this.transactionStack.Contains(transaction))
+				while (this.openTransactions.Contains(transaction))
 				{
-					UndoRedoTransaction toCommit = this.transactionStack.Pop();
+					IInvokableTransaction toCommit = this.openTransactions.Pop();
 
-					if (this.transactionStack.Any())
+					if (toCommit.Equals(transaction))
 					{
-						UndoRedoTransaction topMost = this.transactionStack.Peek();
-						topMost.RegisterInvocation(toCommit);
+						Stack<IInvokableTransaction> history = this.IsUndoing ? this.redoHistory : this.undoHistory;
+						history.Push(transaction);
 					}
 					else
 					{
-						Stack<IInvokable> history = this.IsUndoing ? this.redoHistory : this.undoHistory;
-						history.Push(transaction);
+						IInvokableTransaction topMost = this.openTransactions.Peek();
+						topMost.RegisterInvocation(toCommit);
 					}
 				}
 			}
@@ -334,21 +339,21 @@ namespace Diskordia.UndoRedo
 		/// <param name="transaction">The transaction to roll back.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
 		/// <exception cref="ArgumentException">The <see cref="UndoManager"/> does not contain <paramref name="transaction"/>.</exception>
-		internal void RollbackTransaction(UndoRedoTransaction transaction)
+		void ITransactionManager.RollbackTransaction(IInvokableTransaction transaction)
 		{
 			if (transaction == null)
 			{
 				throw new ArgumentNullException("transaction");
 			}
 
-			if (!this.transactionStack.Contains(transaction))
+			if (!this.openTransactions.Contains(transaction))
 			{
 				throw new ArgumentException("Can not find the transaction to roll back", "transaction");
 			}
 
-			while (this.transactionStack.Contains(transaction))
+			while (this.openTransactions.Contains(transaction))
 			{
-				UndoRedoTransaction toRollback = this.transactionStack.Pop();
+				IInvokableTransaction toRollback = this.openTransactions.Pop();
 				toRollback.Invoke();
 			}
 		}
@@ -357,18 +362,18 @@ namespace Diskordia.UndoRedo
 
 		#region Private members
 
-		private UndoRedoTransaction InnerCreateTransaction()
+		private IInvokableTransaction InnerCreateTransaction(string undoActionName)
 		{
-			UndoRedoTransaction transaction = new UndoRedoTransaction(this);
-			transaction.ActionName = this.actionName;
-			this.transactionStack.Push(transaction);
+			IInvokableTransaction transaction = new UndoRedoTransaction(this);
+			transaction.ActionName = undoActionName;
+			this.openTransactions.Push(transaction);
 
 			return transaction;
 		}
 
-		private UndoRedoTransaction FetchRecordingTransaction()
+		private IInvokableTransaction FetchRecordingTransaction()
 		{
-			return this.transactionStack.Count > 0 ? this.transactionStack.Peek() : null;
+			return this.openTransactions.Count > 0 ? this.openTransactions.Peek() : null;
 		}
 
 		private static string GetMenuItemTitelForAction(string operation, string actionName)
