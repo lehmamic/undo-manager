@@ -18,44 +18,29 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-namespace Diskordia.UndoRedo.Invocation
+using System;
+
+namespace Diskordia.UndoRedo.Transactions
 {
 	/// <summary>
-	/// The invocation class includes the selector, the receiver and the arguments to call a method of an object.
+	/// Interface for the ndo manager to encapsulate the transaction - undo manager interaction.
 	/// </summary>
-	/// <typeparam name="TSource">The type of the source.</typeparam>
-	internal abstract class Invocation<TSource> : IInvokable
+	internal interface ITransactionManager
 	{
-		private string actionName = string.Empty;
+		/// <summary>
+		/// Commits the provided transaction.
+		/// </summary>
+		/// <param name="transaction">The transaction to commit.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
+		/// <exception cref="ArgumentException">The <see cref="UndoManager"/> does not contain <paramref name="transaction"/>.</exception>
+		void CommitTransaction(IInvokableTransaction transaction);
 
 		/// <summary>
-		/// Gets or sets the target of the invocation.
+		/// Rollbacks the provided transaction.
 		/// </summary>
-		public TSource Target { get; protected set; }
-
-		#region IInvokable Members
-
-		/// <summary>
-		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.
-		/// </summary>
-		public abstract void Invoke();
-
-		/// <summary>
-		/// Name of the action, which is performed with this invocation.
-		/// </summary>
-		public string ActionName
-		{
-			get
-			{
-				return this.actionName;
-			}
-
-			set
-			{
-				this.actionName = value != null ? value : string.Empty;
-			}
-		}
-
-		#endregion
+		/// <param name="transaction">The transaction to roll back.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
+		/// <exception cref="ArgumentException">The <see cref="UndoManager"/> does not contain <paramref name="transaction"/>.</exception>
+		void RollbackTransaction(IInvokableTransaction transaction);
 	}
 }

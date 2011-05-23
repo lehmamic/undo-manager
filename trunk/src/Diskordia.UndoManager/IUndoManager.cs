@@ -20,7 +20,7 @@
 
 using System;
 using System.Linq.Expressions;
-using Diskordia.UndoRedo.Transaction;
+using Diskordia.UndoRedo.Transactions;
 
 namespace Diskordia.UndoRedo
 {
