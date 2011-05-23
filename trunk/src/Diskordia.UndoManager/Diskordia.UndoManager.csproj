@@ -92,7 +92,9 @@
     <Compile Include="Transactions\ITransaction.cs" />
     <Compile Include="State\IStateHost.cs" />
     <Compile Include="State\StateSwitcher.cs" />
+    <Compile Include="Transactions\ITransactionFactory.cs" />
     <Compile Include="Transactions\ITransactionManager.cs" />
+    <Compile Include="Transactions\TransactionFactory.cs" />
     <Compile Include="UndoManager.SingletonCreator.cs">
       <SubType>Code</SubType>
     </Compile>

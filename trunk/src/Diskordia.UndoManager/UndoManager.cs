@@ -36,12 +36,28 @@ namespace Diskordia.UndoRedo
 	/// </summary>
 	public sealed partial class UndoManager : IUndoManager, ITransactionManager, IStateHost
 	{
+		private readonly ITransactionFactory transactionFactory;
 		private readonly Stack<IInvokableTransaction> undoHistory = new Stack<IInvokableTransaction>();
 		private readonly Stack<IInvokableTransaction> redoHistory = new Stack<IInvokableTransaction>();
 		private readonly Stack<IInvokableTransaction> openTransactions = new Stack<IInvokableTransaction>();
 
 		private UndoRedoState state = UndoRedoState.Idle;
 		private string actionName = string.Empty;
+
+		public UndoManager()
+			: this(new TransactionFactory())
+		{
+		}
+
+		internal UndoManager(ITransactionFactory transactionFactory)
+		{
+			if (transactionFactory == null)
+			{
+				throw new ArgumentNullException("transactionFactory");
+			}
+
+			this.transactionFactory = transactionFactory;
+		}
 
 		#region IStateHost members
 
@@ -380,7 +396,7 @@ namespace Diskordia.UndoRedo
 
 		private IInvokableTransaction InnerCreateTransaction(string undoActionName)
 		{
-			IInvokableTransaction transaction = new Transaction(this);
+			IInvokableTransaction transaction = this.transactionFactory.CreateTransaction(this);
 			transaction.ActionName = undoActionName;
 			this.openTransactions.Push(transaction);
 
