@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Diskordia.UndoRedo</RootNamespace>
-    <AssemblyName>UndoManager</AssemblyName>
+    <AssemblyName>Diskordia.UndoManager</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
@@ -56,7 +56,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>..\UndoManager.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>bin\Release\UndoManager.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Diskordia.UndoManager.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup>
@@ -80,7 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Invocations\ActionInvocation.cs">
+    <Compile Include="Invocations\ActionInvokation.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">

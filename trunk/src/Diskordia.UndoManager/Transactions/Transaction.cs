@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Diskordia.UndoRedo.Invocations;
 
@@ -54,26 +55,6 @@ namespace Diskordia.UndoRedo.Transactions
 		#region IInvokableTransaction members
 
 		/// <summary>
-		/// Name of the action, which is performed with this invocation.
-		/// </summary>
-		public string ActionName
-		{
-			get
-			{
-				return this.actionName;
-			}
-
-			set
-			{
-				this.actionName = value != null ? value : string.Empty;
-			}
-		}
-
-		#endregion
-
-		#region ITransaction members
-
-		/// <summary>
 		/// Registers an operation to the <see cref="Transaction"/>.
 		/// </summary>
 		/// <typeparam name="TSource">The type of the source.</typeparam>
@@ -96,8 +77,8 @@ namespace Diskordia.UndoRedo.Transactions
 				throw new ArgumentNullException("selector");
 			}
 
-			ActionInvocation<TSource> invocation = new ActionInvocation<TSource>(target, selector);
-			this.invokables.Push(invocation);
+			ActionInvokation<TSource> invokation = new ActionInvokation<TSource>(target, selector);
+			this.RegisterInvokation(invokation);
 		}
 
 		/// <summary>
@@ -105,7 +86,7 @@ namespace Diskordia.UndoRedo.Transactions
 		/// </summary>
 		/// <param name="invokation">The invokation to register.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="invokation"/> is a <see langword="null"/> reference.</exception>
-		public void RegisterInvocation(IInvokable invokation)
+		public void RegisterInvokation(IInvokable invokation)
 		{
 			if (invokation == null)
 			{
@@ -114,6 +95,26 @@ namespace Diskordia.UndoRedo.Transactions
 
 			this.invokables.Push(invokation);
 		}
+
+		/// <summary>
+		/// Name of the action, which is performed with this invocation.
+		/// </summary>
+		public string ActionName
+		{
+			get
+			{
+				return this.actionName;
+			}
+
+			set
+			{
+				this.actionName = value != null ? value : string.Empty;
+			}
+		}
+
+		#endregion
+
+		#region ITransaction members
 
 		/// <summary>
 		/// Commits the undo operation of this <see cref="ITransaction"/>.
@@ -140,7 +141,7 @@ namespace Diskordia.UndoRedo.Transactions
 		/// </summary>
 		public void Invoke()
 		{
-			while (this.invokables.Count > 0)
+			while (this.invokables.Any())
 			{
 				IInvokable invokable = this.invokables.Pop();
 				invokable.Invoke();

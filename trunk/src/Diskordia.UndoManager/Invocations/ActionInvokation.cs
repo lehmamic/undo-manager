@@ -27,13 +27,13 @@ namespace Diskordia.UndoRedo.Invocations
 	/// The action invocation class includes the selector, the receiver and the arguments to call a method of an object.
 	/// </summary>
 	/// <typeparam name="TSource">The type of the source.</typeparam>
-	internal class ActionInvocation<TSource> : IInvokable
+	internal class ActionInvokation<TSource> : IInvokable
 	{
 		private readonly Expression<Action<TSource>> expression;
 		private readonly TSource target;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ActionInvocation&lt;TSource&gt;"/> class.
+		/// Initializes a new instance of the <see cref="ActionInvokation&lt;TSource&gt;"/> class.
 		/// </summary>
 		/// <param name="target">The target on which the operation described by <paramref name="expression"/> has to be invoked.</param>
 		/// <param name="expression">The LinQ expressio describing the action to invoke.</param>
@@ -42,7 +42,7 @@ namespace Diskordia.UndoRedo.Invocations
 		///		<para>- or -</para>
 		///		<para><paramref name="expression"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		public ActionInvocation(TSource target, Expression<Action<TSource>> expression)
+		public ActionInvokation(TSource target, Expression<Action<TSource>> expression)
 		{
 			if (target == null)
 			{

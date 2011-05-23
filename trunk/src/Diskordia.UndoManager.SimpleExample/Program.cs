@@ -66,13 +66,13 @@ namespace SimpleExample
 		public void SwitchOn()
 		{
 			Console.WriteLine("Switch on the light");
-			UndoManager.DefaultUndoManager.RegisterInvocation(this, p => p.SwitchOff());
+			UndoManager.DefaultUndoManager.RegisterInvokation(this, p => p.SwitchOff());
 		}
 
 		public void SwitchOff()
 		{
 			Console.WriteLine("Switch off the light");
-			UndoManager.DefaultUndoManager.RegisterInvocation(this, p => p.SwitchOn());
+			UndoManager.DefaultUndoManager.RegisterInvokation(this, p => p.SwitchOn());
 		}
 
 		public void SetColor(string color)
@@ -81,7 +81,7 @@ namespace SimpleExample
 			this.color = color;
 			Console.WriteLine("Set color {0}.", color);
 
-			UndoManager.DefaultUndoManager.RegisterInvocation(this, p => p.SetColor(backup));
+			UndoManager.DefaultUndoManager.RegisterInvokation(this, p => p.SetColor(backup));
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace Diskordia.UndoRedo.Transactions
 		/// </summary>
 		/// <param name="invokation">The invokation to register.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="invokation"/> is a <see langword="null"/> reference.</exception>
-		void RegisterInvocation(IInvokable invokation);
+		void RegisterInvokation(IInvokable invokation);
 
 		/// <summary>
 		/// Name of the action, which is performed with this invocation.

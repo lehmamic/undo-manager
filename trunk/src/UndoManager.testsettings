@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<TestSettings name="Local Test Run" id="5f610cc5-a0ed-41ef-a74f-0c00e17dbf95" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Description>This is a default test run configuration for a local test run.</Description>
+<TestSettings name="UndoManager" id="ad1de472-d095-4e86-8e84-c6d74879f135" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Description>These are default test settings for a local test run.</Description>
   <Execution>
     <TestTypeSpecific>
       <UnitTestRunConfig testTypeId="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b">
@@ -21,11 +21,11 @@
     </TestTypeSpecific>
     <AgentRule name="LocalMachineDefaultRole">
       <DataCollectors>
-        <DataCollector uri="datacollector://Microsoft/CodeCoverage/1.0" assemblyQualifiedName="Microsoft.VisualStudio.TestTools.CodeCoverage.CoveragePlugIn, Microsoft.VisualStudio.QualityTools.Plugins.CodeCoverage, PublicKeyToken=b03f5f7f11d50a3a">
+        <DataCollector uri="datacollector://microsoft/CodeCoverage/1.0" assemblyQualifiedName="Microsoft.VisualStudio.TestTools.CodeCoverage.CoveragePlugIn, Microsoft.VisualStudio.QualityTools.Plugins.CodeCoverage, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" friendlyName="Code Coverage">
           <Configuration>
             <CodeCoverage keyFile="UndoManager.snk" xmlns="">
               <Regular>
-                <CodeCoverageItem binaryFile="UndoManager\bin\Debug\UndoManager.dll" pdbFile="UndoManager\bin\Debug\UndoManager.pdb" instrumentInPlace="true" />
+                <CodeCoverageItem binaryFile="Diskordia.UndoManager\bin\Debug\Diskordia.UndoManager.dll" pdbFile="Diskordia.UndoManager\bin\Debug\Diskordia.UndoManager.pdb" instrumentInPlace="true" />
               </Regular>
             </CodeCoverage>
           </Configuration>
