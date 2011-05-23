@@ -51,6 +51,8 @@ namespace Diskordia.UndoRedo.Transaction
 			this.owner = undoManager;
 		}
 
+		#region ITransaction members
+
 		/// <summary>
 		/// Registers an operation to the <see cref="UndoRedoTransaction"/>.
 		/// </summary>
@@ -62,7 +64,7 @@ namespace Diskordia.UndoRedo.Transaction
 		///		<para>- or -</para>
 		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		public void RegisterInvocation<TSource>(TSource target, Expression<Action<TSource>> selector)
+		public void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector)
 		{
 			if (target == null)
 			{
@@ -79,37 +81,26 @@ namespace Diskordia.UndoRedo.Transaction
 		}
 
 		/// <summary>
-		/// Adds a child <see cref="UndoRedoTransaction"/> instance.
+		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.
 		/// </summary>
-		/// <param name="transaction">The child <see cref="UndoRedoTransaction"/> to add.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
-		public void Add(UndoRedoTransaction transaction)
+		/// <param name="invokation">The invokation to register.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="invokation"/> is a <see langword="null"/> reference.</exception>
+		public void RegisterInvocation(IInvokable invokation)
 		{
-			if (transaction == null)
+			if (invokation == null)
 			{
 				throw new ArgumentNullException("transaction");
 			}
 
-			this.invokables.Push(transaction);
+			this.invokables.Push(invokation);
 		}
-
-		/// <summary>
-		/// Gets the number of selectors registered in the <see cref="UndoRedoTransaction"/>.
-		/// </summary>
-		/// <value>The count.</value>
-		public int Count
-		{
-			get { return this.invokables.Count; }
-		}
-
-		#region ITransaction members
 
 		/// <summary>
 		/// Commits the undo operation of this <see cref="ITransaction"/>.
 		/// </summary>
 		public void Commit()
 		{
-			this.owner.CommitTransaction();
+			this.owner.CommitTransaction(this);
 		}
 
 		/// <summary>
@@ -117,7 +108,7 @@ namespace Diskordia.UndoRedo.Transaction
 		/// </summary>
 		public void Rollback()
 		{
-			this.owner.RollbackTransaction();
+			this.owner.RollbackTransaction(this);
 		}
 
 		#endregion

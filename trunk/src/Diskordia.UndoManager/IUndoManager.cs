@@ -42,14 +42,14 @@ namespace Diskordia.UndoRedo
 		bool CanUndo { get; }
 
 		/// <summary>
-		/// Commits the created <see cref="ITransaction"/> and records the registered undo operation in the <see cref="IUndoManager"/>.
+		/// Commits the open transactions and records the registered undo operations in the <see cref="IUndoManager"/>.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">No open <see cref="ITransaction"/> to commit available.</exception>
-		void CommitTransaction();
+		void CommitTransactions();
 
 		/// <summary>
 		/// Creates an <see cref="ITransaction"/> for recording the undo operations. Undo operations
-		/// which are recorded while a <see cref="ITransaction"/> is opened get recorded by the <see cref="UndoManager"/> only if the <see cref="ITransaction"/>
+		/// which are recorded while a <see cref="ITransaction"/> is opened get recorded by the <see cref="IUndoManager"/> only if the <see cref="ITransaction"/>
 		/// is commited. A rollback will execute the undo operations which where registered while the <see cref="ITransaction"/> has been open.
 		/// </summary>
 		/// <returns>A new object implementing the <see cref="ITransaction"/> interface.</returns>
@@ -67,7 +67,7 @@ namespace Diskordia.UndoRedo
 		/// Gets a value indicating whether the <see cref="IUndoManager"/> is undoing.
 		/// </summary>
 		/// <value>
-		/// 	<c>True</c> if the <see cref="UndoManager"/> is undoing; otherwise, <c>false</c>.
+		/// 	<c>True</c> if the <see cref="IUndoManager"/> is undoing; otherwise, <c>false</c>.
 		/// </value>
 		bool IsUndoing { get; }
 
@@ -100,9 +100,9 @@ namespace Diskordia.UndoRedo
 		void RegisterInvocation<TSource>(TSource target, Expression<Action<TSource>> selector);
 
 		/// <summary>
-		/// Rollbacks the last created <see cref="ITransaction"/> and invokes the regsitered undo operations.
+		/// Rollbacks the open transaction and invokes the regsitered undo operations.
 		/// </summary>
-		void RollbackTransaction();
+		void RollbackTransactions();
 
 		/// <summary>
 		/// Invokes the last recorded undo operation or transaction.
@@ -110,7 +110,7 @@ namespace Diskordia.UndoRedo
 		void Undo();
 
 		/// <summary>
-		/// Gets the action name of teh undo operation.
+		/// Gets the action name of the undo operation.
 		/// </summary>
 		string UndoActionName { get; }
 

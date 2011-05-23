@@ -19,6 +19,8 @@
  *****************************************************************************/
 
 using System;
+using System.Linq.Expressions;
+using Diskordia.UndoRedo.Invocation;
 
 namespace Diskordia.UndoRedo.Transaction
 {
@@ -27,6 +29,26 @@ namespace Diskordia.UndoRedo.Transaction
 	/// </summary>
 	public interface ITransaction : IDisposable
 	{
+		/// <summary>
+		/// Registers an operation to the <see cref="ITransaction"/>.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the source.</typeparam>
+		/// <param name="target">The target of the undo operation.</param>
+		/// <param name="selector">The undo operation which will be invoked on the target.</param>
+		/// <exception cref="ArgumentNullException">
+		///		<para><paramref name="target"/> is a <see langword="null"/> reference</para>
+		///		<para>- or -</para>
+		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
+		/// </exception>
+		void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector);
+
+		/// <summary>
+		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.
+		/// </summary>
+		/// <param name="invokation">The invokation to register.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="invokation"/> is a <see langword="null"/> reference.</exception>
+		void RegisterInvocation(IInvokable invokation);
+
 		/// <summary>
 		/// Commits the undo operation of this <see cref="ITransaction"/>.
 		/// </summary>

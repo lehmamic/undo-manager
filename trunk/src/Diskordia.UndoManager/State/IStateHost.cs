@@ -26,7 +26,7 @@ namespace Diskordia.UndoRedo.State
 	internal interface IStateHost
 	{
 		/// <summary>
-		/// The <see cref="UndoRedoState"/> indicating the status of the <see cref="Diskordia.UndoRedo.UndoManager"/>.
+		/// Gets or sets the <see cref="UndoRedoState"/> indicating the status of the <see cref="Diskordia.UndoRedo.UndoManager"/>.
 		/// </summary>
 		UndoRedoState State { get; set; }
 	}
