@@ -28,10 +28,10 @@ namespace Diskordia.UndoRedo.Transaction
 	/// <summary>
 	/// A <see cref="UndoRedoTransaction"/> records the undo operations, which are registered in the <see cref="UndoManager"/> while commiting the <see cref="UndoRedoTransaction"/>.
 	/// </summary>
-	public sealed class UndoRedoTransaction : ITransaction, IInvokable
+	public sealed class UndoRedoTransaction : IInvokableTransaction
 	{
 		private readonly Stack<IInvokable> invokables = new Stack<IInvokable>();
-		private readonly UndoManager owner;
+		private readonly ITransactionManager owner;
 
 		private string actionName = string.Empty;
 		private bool disposed = false;
@@ -39,17 +39,37 @@ namespace Diskordia.UndoRedo.Transaction
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UndoRedoTransaction"/> class.
 		/// </summary>
-		/// <param name="undoManager">The undo manager.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="undoManager"/> is a <see langword="null"/> reference.</exception>
-		internal UndoRedoTransaction(UndoManager undoManager)
+		/// <param name="transactionManager">The <see cref="ITransactionManager"/> controlling this transaction.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="transactionManager"/> is a <see langword="null"/> reference.</exception>
+		internal UndoRedoTransaction(ITransactionManager transactionManager)
 		{
-			if (undoManager == null)
+			if (transactionManager == null)
 			{
 				throw new ArgumentNullException("undoRedoContext");
 			}
 
-			this.owner = undoManager;
+			this.owner = transactionManager;
 		}
+
+		#region IInvokableTransaction members
+
+		/// <summary>
+		/// Name of the action, which is performed with this invocation.
+		/// </summary>
+		public string ActionName
+		{
+			get
+			{
+				return this.actionName;
+			}
+
+			set
+			{
+				this.actionName = value != null ? value : string.Empty;
+			}
+		}
+
+		#endregion
 
 		#region ITransaction members
 
@@ -124,22 +144,6 @@ namespace Diskordia.UndoRedo.Transaction
 			{
 				IInvokable invokable = this.invokables.Pop();
 				invokable.Invoke();
-			}
-		}
-
-		/// <summary>
-		/// Name of the action, which is performed with this invocation.
-		/// </summary>
-		public string ActionName
-		{
-			get
-			{
-				return this.actionName;
-			}
-
-			set
-			{
-				this.actionName = value != null ? value : string.Empty;
 			}
 		}
 
