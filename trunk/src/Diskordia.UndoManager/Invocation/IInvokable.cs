@@ -23,7 +23,7 @@ namespace Diskordia.UndoRedo.Invocation
 	/// <summary>
 	/// Interface providing members to invoke operations(s) on a target object.
 	/// </summary>
-	internal interface IInvokable
+	public interface IInvokable
 	{
 		/// <summary>
 		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.

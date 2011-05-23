@@ -18,36 +18,55 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-namespace Diskordia.UndoRedo.State
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Diskordia.UndoRedo
 {
-	/// <summary>
-	/// Indicates the state of the <see cref="Diskordia.UndoRedo.UndoManager"/>.
-	/// </summary>
-	internal enum UndoRedoState
+	public sealed partial class UndoManager
 	{
-		/// <summary>
-		/// The <see cref="Diskordia.UndoRedo.UndoManager"/> is idle.
-		/// </summary>
-		Idle,
+		#region Signleton Creator
 
 		/// <summary>
-		/// The <see cref="Diskordia.UndoRedo.UndoManager"/> is undoing.
+		/// Internal class to support lazy initialization.
 		/// </summary>
-		Undoing,
+		private class SingletonCreator
+		{
+			/// <summary>
+			/// Initializes static members of the <see cref="SingletonCreator"/> class.
+			/// </summary>
+			static SingletonCreator()
+			{
+			}
+
+			/// <summary>
+			/// Prevents a default instance of the <see cref="SingletonCreator"/> class from being created.
+			/// </summary>
+			private SingletonCreator()
+			{
+			}
+
+			/// <summary>
+			/// Threadsafe implementation (compiler guaranteed whith static initializatrion).
+			/// This implementation uses an inner class to make the .NET instantiation fully lazy.
+			/// </summary>
+			internal static readonly UndoManager Instance = new UndoManager();
+		}
 
 		/// <summary>
-		/// The <see cref="Diskordia.UndoRedo.UndoManager"/> is redoing.
+		/// Gets the default undo manager.
 		/// </summary>
-		Redoing,
+		/// <value>The default undo manager.</value>
+		public static IUndoManager DefaultUndoManager
+		{
+			get
+			{
+				return SingletonCreator.Instance;
+			}
+		}
 
-		/// <summary>
-		/// The <see cref="Diskordia.UndoRedo.UndoManager"/> is committing an open <see cref="Diskordia.UndoRedo.Transaction.ITransaction"/>.
-		/// </summary>
-		Committing,
-
-		/// <summary>
-		/// The <see cref="Diskordia.UndoRedo.UndoManager"/> is rolling back an open <see cref="Diskordia.UndoRedo.Transaction.ITransaction"/>.
-		/// </summary>
-		RollingBack
+		#endregion
 	}
 }
