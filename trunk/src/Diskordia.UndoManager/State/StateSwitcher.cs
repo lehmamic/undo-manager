@@ -20,15 +20,15 @@
 
 using System;
 
-namespace UndoRedo.State
+namespace Diskordia.UndoRedo.State
 {
 	/// <summary>
-	/// This class switchs the state of the <see cref="UndoRedo.UndoManager"/> exception save.
+	/// This class switchs the state of the <see cref="Diskordia.UndoRedo.UndoManager"/> exception save.
 	/// </summary>
 	internal class StateSwitcher : IDisposable
 	{
 		private readonly IStateHost owner;
-		private readonly UndoRedo.State.UndoRedoState backup;
+		private readonly Diskordia.UndoRedo.State.UndoRedoState backup;
 
 		private bool disposed = false;
 
@@ -38,7 +38,7 @@ namespace UndoRedo.State
 		/// <param name="target">The target <see cref="IStateHost"/> to switch the state.</param>
 		/// <param name="state">The <see cref="UndoRedoState"/> to set on the <paramref name="target"/>.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="target"/> is a <see langword="null"/> reference.</exception>
-		public StateSwitcher(IStateHost target, UndoRedo.State.UndoRedoState state)
+		public StateSwitcher(IStateHost target, Diskordia.UndoRedo.State.UndoRedoState state)
 		{
 			if (target == null)
 			{

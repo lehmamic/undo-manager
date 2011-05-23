@@ -23,12 +23,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
-using UndoRedo.Invocation;
-using UndoRedo.Properties;
-using UndoRedo.State;
-using UndoRedo.Transaction;
+using Diskordia.UndoRedo.Invocation;
+using Diskordia.UndoRedo.Properties;
+using Diskordia.UndoRedo.State;
+using Diskordia.UndoRedo.Transaction;
 
-namespace UndoRedo
+namespace Diskordia.UndoRedo
 {
 	/// <summary>
 	/// The undo manager records undo operations to provide undo and redo logic.
@@ -45,7 +45,7 @@ namespace UndoRedo
 		#region IStateHost members
 
 		/// <summary>
-		/// The <see cref="UndoRedoState"/> indicating the status of the <see cref="UndoRedo.UndoManager"/>.
+		/// The <see cref="UndoRedoState"/> indicating the status of the <see cref="Diskordia.UndoRedo.UndoManager"/>.
 		/// </summary>
 		UndoRedoState IStateHost.State
 		{

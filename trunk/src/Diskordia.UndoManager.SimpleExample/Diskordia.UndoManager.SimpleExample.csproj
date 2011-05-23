@@ -59,9 +59,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UndoManager\UndoManager.csproj">
+    <ProjectReference Include="..\Diskordia.UndoManager\Diskordia.UndoManager.csproj">
       <Project>{DC77EA26-F678-4088-B93F-98B14F8B15C1}</Project>
-      <Name>UndoManager</Name>
+      <Name>Diskordia.UndoManager</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

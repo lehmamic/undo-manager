@@ -1,6 +1,6 @@
 ﻿/*****************************************************************************
  * UndoManager. An easy to use undo API.
- * Copyright (C) 2009 Michael Lehmann 
+ * Copyright (C) 2009  Michael Lehmann 
  ******************************************************************************
  * This file is part of UndoManager.
  *
@@ -18,31 +18,21 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-namespace UndoRedo.State
+namespace Diskordia.UndoRedo.Invocation
 {
 	/// <summary>
-	/// Indicates the state of the <see cref="UndoRedo.UndoManager"/>.
+	/// Interface providing members to invoke operations(s) on a target object.
 	/// </summary>
-	internal enum UndoRedoState
+	internal interface IInvokable
 	{
 		/// <summary>
-		/// The <see cref="UndoRedo.UndoManager"/> is recording.
+		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.
 		/// </summary>
-		Recording,
+		void Invoke();
 
 		/// <summary>
-		/// The <see cref="UndoRedo.UndoManager"/> is undoing.
+		/// Name of the action, which is performed with this invocation.
 		/// </summary>
-		Undoing,
-
-		/// <summary>
-		/// The <see cref="UndoRedo.UndoManager"/> is redoing.
-		/// </summary>
-		Redoing,
-
-		/// <summary>
-		/// The <see cref="UndoRedo.UndoManager"/> is rolling back an open <see cref="UndoRedo.Transaction.ITransaction"/>.
-		/// </summary>
-		RollingBackTransaction
+		string ActionName { get; set; }
 	}
 }

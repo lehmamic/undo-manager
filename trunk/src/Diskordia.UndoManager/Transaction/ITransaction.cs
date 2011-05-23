@@ -18,44 +18,23 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-namespace UndoRedo.Invocation
+using System;
+
+namespace Diskordia.UndoRedo.Transaction
 {
 	/// <summary>
-	/// The invocation class includes the selector, the receiver and the arguments to call a method of an object.
+	/// Transaction interface for handling the undo redo transactions.
 	/// </summary>
-	/// <typeparam name="TSource">The type of the source.</typeparam>
-	internal abstract class Invocation<TSource> : IInvokable
+	public interface ITransaction : IDisposable
 	{
-		private string actionName = string.Empty;
+		/// <summary>
+		/// Commits the undo operation of this <see cref="ITransaction"/>.
+		/// </summary>
+		void Commit();
 
 		/// <summary>
-		/// Gets or sets the target of the invocation.
+		/// Rollbacks the transaction and calls the undo operations to recover the state befor the <see cref="ITransaction"/> has been created.
 		/// </summary>
-		public TSource Target { get; protected set; }
-
-		#region IInvokable Members
-
-		/// <summary>
-		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.
-		/// </summary>
-		public abstract void Invoke();
-
-		/// <summary>
-		/// Name of the action, which is performed with this invocation.
-		/// </summary>
-		public string ActionName
-		{
-			get
-			{
-				return this.actionName;
-			}
-
-			set
-			{
-				this.actionName = value != null ? value : string.Empty;
-			}
-		}
-
-		#endregion
+		void Rollback();
 	}
 }

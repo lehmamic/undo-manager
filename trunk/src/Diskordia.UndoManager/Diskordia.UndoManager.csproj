@@ -8,7 +8,7 @@
     <ProjectGuid>{DC77EA26-F678-4088-B93F-98B14F8B15C1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UndoRedo</RootNamespace>
+    <RootNamespace>Diskordia.UndoRedo</RootNamespace>
     <AssemblyName>UndoManager</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

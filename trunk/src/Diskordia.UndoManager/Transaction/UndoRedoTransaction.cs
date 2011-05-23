@@ -21,9 +21,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using UndoRedo.Invocation;
+using Diskordia.UndoRedo.Invocation;
 
-namespace UndoRedo.Transaction
+namespace Diskordia.UndoRedo.Transaction
 {
 	/// <summary>
 	/// A <see cref="UndoRedoTransaction"/> records the undo operations, which are registered in the <see cref="UndoManager"/> while commiting the <see cref="UndoRedoTransaction"/>.

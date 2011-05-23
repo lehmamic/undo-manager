@@ -21,7 +21,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace UndoRedo.Invocation
+namespace Diskordia.UndoRedo.Invocation
 {
 	/// <summary>
 	/// The function invocation class includes the selector, the receiver and the arguments to call a method of an object.

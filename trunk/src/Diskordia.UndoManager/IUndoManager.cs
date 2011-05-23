@@ -20,9 +20,9 @@
 
 using System;
 using System.Linq.Expressions;
-using UndoRedo.Transaction;
+using Diskordia.UndoRedo.Transaction;
 
-namespace UndoRedo
+namespace Diskordia.UndoRedo
 {
 	/// <summary>
 	/// Undo manager interface for recording undo and redo operations.
