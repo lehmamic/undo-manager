@@ -18,23 +18,16 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-using System;
-
-namespace UndoRedo.Transaction
+namespace Diskordia.UndoRedo.State
 {
 	/// <summary>
-	/// Transaction interface for handling the undo redo transactions.
+	/// Interface providing access to the <see cref="UndoRedoState"/>.
 	/// </summary>
-	public interface ITransaction : IDisposable
+	internal interface IStateHost
 	{
 		/// <summary>
-		/// Commits the undo operation of this <see cref="ITransaction"/>.
+		/// The <see cref="UndoRedoState"/> indicating the status of the <see cref="Diskordia.UndoRedo.UndoManager"/>.
 		/// </summary>
-		void Commit();
-
-		/// <summary>
-		/// Rollbacks the transaction and calls the undo operations to recover the state befor the <see cref="ITransaction"/> has been created.
-		/// </summary>
-		void Rollback();
+		UndoRedoState State { get; set; }
 	}
 }

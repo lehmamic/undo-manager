@@ -18,16 +18,44 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-namespace UndoRedo.State
+namespace Diskordia.UndoRedo.Invocation
 {
 	/// <summary>
-	/// Interface providing access to the <see cref="UndoRedoState"/>.
+	/// The invocation class includes the selector, the receiver and the arguments to call a method of an object.
 	/// </summary>
-	internal interface IStateHost
+	/// <typeparam name="TSource">The type of the source.</typeparam>
+	internal abstract class Invocation<TSource> : IInvokable
 	{
+		private string actionName = string.Empty;
+
 		/// <summary>
-		/// The <see cref="UndoRedoState"/> indicating the status of the <see cref="UndoRedo.UndoManager"/>.
+		/// Gets or sets the target of the invocation.
 		/// </summary>
-		UndoRedoState State { get; set; }
+		public TSource Target { get; protected set; }
+
+		#region IInvokable Members
+
+		/// <summary>
+		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.
+		/// </summary>
+		public abstract void Invoke();
+
+		/// <summary>
+		/// Name of the action, which is performed with this invocation.
+		/// </summary>
+		public string ActionName
+		{
+			get
+			{
+				return this.actionName;
+			}
+
+			set
+			{
+				this.actionName = value != null ? value : string.Empty;
+			}
+		}
+
+		#endregion
 	}
 }

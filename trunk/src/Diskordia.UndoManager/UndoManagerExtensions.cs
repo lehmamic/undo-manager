@@ -21,52 +21,37 @@
 using System;
 using System.Linq.Expressions;
 
-namespace UndoRedo.Invocation
+namespace Diskordia.UndoRedo
 {
 	/// <summary>
-	/// The action invocation class includes the selector, the receiver and the arguments to call a method of an object.
+	/// This class provides extension methods to support the usage of the <see cref="UndoManager"/>.
 	/// </summary>
-	/// <typeparam name="TSource">The type of the source.</typeparam>
-	internal class ActionInvocation<TSource> : Invocation<TSource>
+	public static class UndoManagerExtensions
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ActionInvocation&lt;TSource&gt;"/> class.
+		/// Registers an operation into the undo history of the default <see cref="UndoManager"/>.
 		/// </summary>
-		/// <param name="target">The target on which the operation described by <paramref name="expression"/> has to be invoked.</param>
-		/// <param name="expression">The LinQ expressio describing the action to invoke.</param>
+		/// <typeparam name="TSource">The type of the source.</typeparam>
+		/// <param name="target">The target instance.</param>
+		/// <param name="selector">The invocation delegate of the undo operation.</param>
 		/// <exception cref="ArgumentNullException">
 		///		<para><paramref name="target"/> is a <see langword="null"/> reference</para>
 		///		<para>- or -</para>
-		///		<para><paramref name="expression"/> is a <see langword="null"/> reference.</para>
+		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		public ActionInvocation(TSource target, Expression<Action<TSource>> expression)
+		public static void RegisterUndoInvocation<TSource>(this TSource target, Expression<Action<TSource>> selector)
 		{
 			if (target == null)
 			{
 				throw new ArgumentNullException("target");
 			}
 
-			if (expression == null)
+			if (selector == null)
 			{
-				throw new ArgumentNullException("expression");
+				throw new ArgumentNullException("selector");
 			}
 
-			this.Target = target;
-			this.Expression = expression;
-		}
-
-		/// <summary>
-		/// Gets the expression required to invoke the operation.
-		/// </summary>
-		public Expression<Action<TSource>> Expression { get; private set; }
-
-		/// <summary>
-		/// Invokes this invocation.
-		/// </summary>
-		public override void Invoke()
-		{
-			Action<TSource> action = this.Expression.Compile();
-			action(Target);
+			UndoManager.DefaultUndoManager.RegisterInvocation(target, selector);
 		}
 	}
 }

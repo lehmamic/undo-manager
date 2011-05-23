@@ -21,8 +21,8 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using UndoRedo;
-using UndoRedo.Transaction;
+using Diskordia.UndoRedo;
+using Diskordia.UndoRedo.Transaction;
 
 namespace UndoManagerTest
 {
