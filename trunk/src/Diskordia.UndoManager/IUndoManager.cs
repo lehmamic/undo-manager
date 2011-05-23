@@ -20,6 +20,7 @@
 
 using System;
 using System.Linq.Expressions;
+using Diskordia.UndoRedo.Invocations;
 using Diskordia.UndoRedo.Transactions;
 
 namespace Diskordia.UndoRedo
@@ -97,7 +98,14 @@ namespace Diskordia.UndoRedo
 		///		<para>- or -</para>
 		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		void RegisterInvocation<TSource>(TSource target, Expression<Action<TSource>> selector);
+		void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector);
+
+		/// <summary>
+		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.
+		/// </summary>
+		/// <param name="invokation">The invokation to register.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="invokation"/> is a <see langword="null"/> reference.</exception>
+		void RegisterInvokation(IInvokable invokation);
 
 		/// <summary>
 		/// Rollbacks the open transaction and invokes the regsitered undo operations.

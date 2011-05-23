@@ -51,7 +51,7 @@ namespace Diskordia.UndoRedo
 				throw new ArgumentNullException("selector");
 			}
 
-			UndoManager.DefaultUndoManager.RegisterInvocation(target, selector);
+			UndoManager.DefaultUndoManager.RegisterInvokation(target, selector);
 		}
 	}
 }

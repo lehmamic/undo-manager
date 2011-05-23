@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C554E4E4-8FFF-4F10-9FBC-393CAE99357E}"
 	ProjectSection(SolutionItems) = preProject
-		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		UndoManager.testsettings = UndoManager.testsettings
 		UndoManager.vsmdi = UndoManager.vsmdi
 	EndProjectSection
 EndProject

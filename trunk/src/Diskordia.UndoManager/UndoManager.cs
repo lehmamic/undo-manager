@@ -116,7 +116,7 @@ namespace Diskordia.UndoRedo
 		///		<para>- or -</para>
 		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		public void RegisterInvocation<TSource>(TSource target, Expression<Action<TSource>> selector)
+		public void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector)
 		{
 			if (target == null)
 			{
@@ -128,18 +128,34 @@ namespace Diskordia.UndoRedo
 				throw new ArgumentNullException("selector");
 			}
 
+			ActionInvokation<TSource> invokation = new ActionInvokation<TSource>(target, selector);
+			this.RegisterInvokation(invokation);
+		}
+
+		/// <summary>
+		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.
+		/// </summary>
+		/// <param name="invokation">The invokation to register.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="invokation"/> is a <see langword="null"/> reference.</exception>
+		public void RegisterInvokation(IInvokable invokation)
+		{
+			if (invokation == null)
+			{
+				throw new ArgumentNullException("invokation");
+			}
+
 			if (this.state != UndoRedoState.RollingBack)
 			{
 				IInvokableTransaction recordingTransaction = this.FetchRecordingTransaction();
 				if (recordingTransaction != null)
 				{
-					recordingTransaction.RegisterInvokation(target, selector);
+					recordingTransaction.RegisterInvokation(invokation);
 				}
 				else
 				{
 					using (IInvokableTransaction transaction = this.InnerCreateTransaction(this.actionName))
 					{
-						transaction.RegisterInvokation(target, selector);
+						transaction.RegisterInvokation(invokation);
 					}
 				}
 			}
@@ -327,7 +343,7 @@ namespace Diskordia.UndoRedo
 					else
 					{
 						IInvokableTransaction topMost = this.openTransactions.Peek();
-						topMost.RegisterInvocation(toCommit);
+						topMost.RegisterInvokation(toCommit);
 					}
 				}
 			}

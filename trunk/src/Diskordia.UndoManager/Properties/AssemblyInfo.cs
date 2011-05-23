@@ -34,3 +34,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.1.*")]
 [assembly: AssemblyFileVersion("0.1")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Diskordia.UndoManager.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100195de40357833e20e4df37673c3685ed16e6b079f3e368349b5128c98f16a53c75a1170031ae30e0ce53424a094bb2eb15b1e485ffb0629a1e07dab703f804771e7def1c74d856769aaba80e2e5059f2d4d51b3b8ef5a90945d72f5c963c02c66c4d5df0652bb78f1ab67b8426205ca9d6124d9a57dad8536af8c062f3a9cfc6")]
