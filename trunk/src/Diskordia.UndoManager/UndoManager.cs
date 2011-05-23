@@ -22,6 +22,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 using Diskordia.UndoRedo.Invocation;
 using Diskordia.UndoRedo.Properties;
@@ -40,7 +41,7 @@ namespace Diskordia.UndoRedo
 		private readonly Stack<UndoRedoTransaction> transactionStack = new Stack<UndoRedoTransaction>();
 
 		private UndoRedoState state = UndoRedoState.Recording;
-		private string actionNameForCurrentTransaction = string.Empty;
+		private string actionName = string.Empty;
 
 		#region IStateHost members
 
@@ -218,7 +219,6 @@ namespace Diskordia.UndoRedo
 		/// </summary>
 		public void RollbackTransaction()
 		{
-
 			if (this.transactionStack.Count > 0)
 			{
 				using (new StateSwitcher(this, UndoRedoState.RollingBackTransaction))
@@ -244,11 +244,12 @@ namespace Diskordia.UndoRedo
 				throw new ArgumentNullException("actionName");
 			}
 
-			this.actionNameForCurrentTransaction = actionName;
+			this.actionName = actionName;
 
-			if (this.transactionStack.Count > 0)
+			UndoRedoTransaction currentTransaction = this.transactionStack.FirstOrDefault();
+			if (currentTransaction != null)
 			{
-				this.transactionStack.Peek().ActionName = this.actionNameForCurrentTransaction;
+				currentTransaction.ActionName = actionName;
 			}
 		}
 
@@ -321,7 +322,7 @@ namespace Diskordia.UndoRedo
 		private UndoRedoTransaction InnerCreateTransaction()
 		{
 			UndoRedoTransaction transaction = new UndoRedoTransaction(this);
-			transaction.ActionName = this.actionNameForCurrentTransaction;
+			transaction.ActionName = this.actionName;
 			this.transactionStack.Push(transaction);
 
 			return transaction;
