@@ -21,14 +21,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Diskordia.UndoRedo.Invocation;
+using Diskordia.UndoRedo.Invocations;
 
-namespace Diskordia.UndoRedo.Transaction
+namespace Diskordia.UndoRedo.Transactions
 {
 	/// <summary>
-	/// A <see cref="UndoRedoTransaction"/> records the undo operations, which are registered in the <see cref="UndoManager"/> while commiting the <see cref="UndoRedoTransaction"/>.
+	/// A <see cref="Transaction"/> records the undo operations, which are registered in the <see cref="UndoManager"/> while commiting the <see cref="Transaction"/>.
 	/// </summary>
-	public sealed class UndoRedoTransaction : IInvokableTransaction
+	public sealed class Transaction : IInvokableTransaction
 	{
 		private readonly Stack<IInvokable> invokables = new Stack<IInvokable>();
 		private readonly ITransactionManager owner;
@@ -37,11 +37,11 @@ namespace Diskordia.UndoRedo.Transaction
 		private bool disposed = false;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UndoRedoTransaction"/> class.
+		/// Initializes a new instance of the <see cref="Transaction"/> class.
 		/// </summary>
 		/// <param name="transactionManager">The <see cref="ITransactionManager"/> controlling this transaction.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="transactionManager"/> is a <see langword="null"/> reference.</exception>
-		internal UndoRedoTransaction(ITransactionManager transactionManager)
+		internal Transaction(ITransactionManager transactionManager)
 		{
 			if (transactionManager == null)
 			{
@@ -74,7 +74,7 @@ namespace Diskordia.UndoRedo.Transaction
 		#region ITransaction members
 
 		/// <summary>
-		/// Registers an operation to the <see cref="UndoRedoTransaction"/>.
+		/// Registers an operation to the <see cref="Transaction"/>.
 		/// </summary>
 		/// <typeparam name="TSource">The type of the source.</typeparam>
 		/// <param name="target">The target of the undo operation.</param>
@@ -136,7 +136,7 @@ namespace Diskordia.UndoRedo.Transaction
 		#region IInvokable members
 
 		/// <summary>
-		/// Invokes all registered commands of this <see cref="UndoRedoTransaction"/>.
+		/// Invokes all registered commands of this <see cref="Transaction"/>.
 		/// </summary>
 		public void Invoke()
 		{
@@ -185,13 +185,13 @@ namespace Diskordia.UndoRedo.Transaction
 		}
 
 		/// <summary>
-		/// Finalizes an instance of the <see cref="UndoRedoTransaction"/> class.
+		/// Finalizes an instance of the <see cref="Transaction"/> class.
 		/// </summary>
 		/// <remark>
 		/// Releases unmanaged resources and performs other cleanup operations before the
-		/// <see cref="UndoRedoTransaction"/> is reclaimed by garbage collection.
+		/// <see cref="Transaction"/> is reclaimed by garbage collection.
 		/// </remark>
-		~UndoRedoTransaction()
+		~Transaction()
 		{
 			this.Dispose(false);
 		}

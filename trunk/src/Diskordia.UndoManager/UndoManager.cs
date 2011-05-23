@@ -24,10 +24,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using Diskordia.UndoRedo.Invocation;
+using Diskordia.UndoRedo.Invocations;
 using Diskordia.UndoRedo.Properties;
 using Diskordia.UndoRedo.State;
-using Diskordia.UndoRedo.Transaction;
+using Diskordia.UndoRedo.Transactions;
 
 namespace Diskordia.UndoRedo
 {
@@ -364,7 +364,7 @@ namespace Diskordia.UndoRedo
 
 		private IInvokableTransaction InnerCreateTransaction(string undoActionName)
 		{
-			IInvokableTransaction transaction = new UndoRedoTransaction(this);
+			IInvokableTransaction transaction = new Transaction(this);
 			transaction.ActionName = undoActionName;
 			this.openTransactions.Push(transaction);
 

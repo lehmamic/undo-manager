@@ -41,12 +41,12 @@ namespace Diskordia.UndoRedo.State
 		Redoing,
 
 		/// <summary>
-		/// The <see cref="Diskordia.UndoRedo.UndoManager"/> is committing an open <see cref="Diskordia.UndoRedo.Transaction.ITransaction"/>.
+		/// The <see cref="Diskordia.UndoRedo.UndoManager"/> is committing an open <see cref="Diskordia.UndoRedo.Transactions.ITransaction"/>.
 		/// </summary>
 		Committing,
 
 		/// <summary>
-		/// The <see cref="Diskordia.UndoRedo.UndoManager"/> is rolling back an open <see cref="Diskordia.UndoRedo.Transaction.ITransaction"/>.
+		/// The <see cref="Diskordia.UndoRedo.UndoManager"/> is rolling back an open <see cref="Diskordia.UndoRedo.Transactions.ITransaction"/>.
 		/// </summary>
 		RollingBack
 	}

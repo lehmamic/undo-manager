@@ -1,6 +1,6 @@
 ﻿/*****************************************************************************
  * UndoManager. An easy to use undo API.
- * Copyright (C) 2009 Michael Lehmann 
+ * Copyright (C) 2009  Michael Lehmann 
  ******************************************************************************
  * This file is part of UndoManager.
  *
@@ -18,23 +18,16 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-using System;
-
-namespace Diskordia.UndoRedo.Transaction
+namespace Diskordia.UndoRedo.Invocations
 {
 	/// <summary>
-	/// Transaction interface for handling the undo redo transactions.
+	/// Interface providing members to invoke operations(s) on a target object.
 	/// </summary>
-	public interface ITransaction : IDisposable
+	public interface IInvokable
 	{
 		/// <summary>
-		/// Commits the undo operation of this <see cref="ITransaction"/>.
+		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.
 		/// </summary>
-		void Commit();
-
-		/// <summary>
-		/// Rollbacks the transaction and calls the undo operations to recover the state befor the <see cref="ITransaction"/> has been created.
-		/// </summary>
-		void Rollback();
+		void Invoke();
 	}
 }

@@ -80,7 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Invocation\ActionInvocation.cs">
+    <Compile Include="Invocations\ActionInvocation.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -88,22 +88,19 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Transaction\IInvokableTransaction.cs" />
-    <Compile Include="Transaction\ITransaction.cs" />
+    <Compile Include="Transactions\IInvokableTransaction.cs" />
+    <Compile Include="Transactions\ITransaction.cs" />
     <Compile Include="State\IStateHost.cs" />
     <Compile Include="State\StateSwitcher.cs" />
-    <Compile Include="Transaction\ITransactionManager.cs" />
+    <Compile Include="Transactions\ITransactionManager.cs" />
     <Compile Include="UndoManager.SingletonCreator.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IUndoManager.Extensions.cs" />
-    <Compile Include="Invocation\IInvokable.cs" />
-    <Compile Include="Invocation\Invocation.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Invocations\IInvokable.cs" />
     <Compile Include="IUndoManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Transaction\UndoRedoTransaction.cs" />
+    <Compile Include="Transactions\Transaction.cs" />
     <Compile Include="UndoManager.cs" />
     <Compile Include="State\UndoRedoState.cs" />
   </ItemGroup>

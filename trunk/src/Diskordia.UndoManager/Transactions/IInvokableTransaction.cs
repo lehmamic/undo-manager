@@ -20,9 +20,9 @@
 
 using System;
 using System.Linq.Expressions;
-using Diskordia.UndoRedo.Invocation;
+using Diskordia.UndoRedo.Invocations;
 
-namespace Diskordia.UndoRedo.Transaction
+namespace Diskordia.UndoRedo.Transactions
 {
 	/// <summary>
 	/// Inernal interface for transaction - undo manager interaction.
