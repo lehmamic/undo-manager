@@ -89,6 +89,19 @@ namespace Diskordia.UndoRedo
 		string RedoMenuItemTitel { get; }
 
 		/// <summary>
+		/// Registers an operation as lambda expression, which will be invoked when an undo is performed.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the source.</typeparam>
+		/// <param name="target">The target instance.</param>
+		/// <param name="selector">The invocation delegate of the undo operation.</param>
+		/// <exception cref="ArgumentNullException">
+		///		<para><paramref name="target"/> is a <see langword="null"/> reference</para>
+		///		<para>- or -</para>
+		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
+		/// </exception>
+		void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector);
+
+		/// <summary>
 		/// Registers an operation with the provided argument, which will be invoked when an undo is performed.
 		/// </summary>
 		/// <typeparam name="TArgument">The type of the argument.</typeparam>
@@ -107,6 +120,14 @@ namespace Diskordia.UndoRedo
 		/// <param name="invokation">The invokation to register.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="invokation"/> is a <see langword="null"/> reference.</exception>
 		void RegisterInvokation(IInvokable invokation);
+
+		/// <summary>
+		/// Prepares the target object as the subject for the dynamically invoked undo/redo operations.
+		/// </summary>
+		/// <param name="target">The target of the dynamic invokation.</param>
+		/// <returns>The dynamic object targeting the provided <paramref name="target"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="target"/> is a <see langword="null"/> reference.</exception>
+		dynamic PrepareWithInvocationTarget(object target);
 
 		/// <summary>
 		/// Rollbacks the open transaction and invokes the regsitered undo operations.
