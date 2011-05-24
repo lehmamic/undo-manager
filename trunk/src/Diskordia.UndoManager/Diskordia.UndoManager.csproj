@@ -85,6 +85,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Invokations\ActionInvokationException.cs" />
+    <Compile Include="Invokations\ReflectionBasedInvokation.cs" />
+    <Compile Include="Invokations\UndressedInvokationTarget.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
