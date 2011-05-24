@@ -1,6 +1,6 @@
 ﻿/*****************************************************************************
  * UndoManager. An easy to use undo API.
- * Copyright (C) 2009  Michael Lehmann 
+ * Copyright (C) 2009 Michael Lehmann 
  ******************************************************************************
  * This file is part of UndoManager.
  *
@@ -18,25 +18,18 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Diskordia.UndoRedo
+namespace Diskordia.UndoRedo.Transactions
 {
-	public interface ITarget
+	internal class TransactionFactoryStub : ITransactionFactory
 	{
-		void UndoOperation();
+		public IInvokableTransaction Transaction { get; set; }
 
-		void Add(string item);
+		public bool TransactionCreated { get; set; }
 
-		void Push(string item);
-
-		void RedoOperation();
-
-		bool Remove(string item);
-
-		string Pop();
+		public IInvokableTransaction CreateTransaction(ITransactionManager transactionManager)
+		{
+			this.TransactionCreated = true;
+			return this.Transaction;
+		}
 	}
 }

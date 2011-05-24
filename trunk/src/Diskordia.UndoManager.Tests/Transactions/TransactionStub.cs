@@ -19,30 +19,27 @@
  *****************************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Diskordia.UndoRedo.Invokations;
+using System.Collections;
 
 namespace Diskordia.UndoRedo.Transactions
 {
-	/// <summary>
-	/// A <see cref="Transaction"/> records the undo operations, which are registered in the <see cref="UndoManager"/> while commiting the <see cref="Transaction"/>.
-	/// </summary>
-	public sealed class Transaction : IInvokableTransaction
+	internal class TransactionStub : IInvokableTransaction
 	{
+		public bool InvokationRegistered { get; set; }
+
+		public bool Commited { get; set; }
+
 		private readonly Stack<IInvokable> invokables = new Stack<IInvokable>();
 		private readonly ITransactionManager owner;
 
 		private string actionName = string.Empty;
 		private bool disposed = false;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Transaction"/> class.
-		/// </summary>
-		/// <param name="transactionManager">The <see cref="ITransactionManager"/> controlling this transaction.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="transactionManager"/> is a <see langword="null"/> reference.</exception>
-		internal Transaction(ITransactionManager transactionManager)
+		internal TransactionStub(ITransactionManager transactionManager)
 		{
 			if (transactionManager == null)
 			{
@@ -54,11 +51,6 @@ namespace Diskordia.UndoRedo.Transactions
 
 		#region IInvokableTransaction members
 
-		/// <summary>
-		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.
-		/// </summary>
-		/// <param name="invokation">The invokation to register.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="invokation"/> is a <see langword="null"/> reference.</exception>
 		public void RegisterInvokation(IInvokable invokation)
 		{
 			if (invokation == null)
@@ -67,11 +59,10 @@ namespace Diskordia.UndoRedo.Transactions
 			}
 
 			this.invokables.Push(invokation);
+
+			this.InvokationRegistered = true;
 		}
 
-		/// <summary>
-		/// Gets or sets the name of the action, which is performed with this invocation.
-		/// </summary>
 		public string ActionName
 		{
 			get
@@ -89,17 +80,13 @@ namespace Diskordia.UndoRedo.Transactions
 
 		#region ITransaction members
 
-		/// <summary>
-		/// Commits the undo operation of this <see cref="ITransaction"/>.
-		/// </summary>
 		public void Commit()
 		{
 			this.owner.CommitTransaction(this);
+
+			this.Commited = true;
 		}
 
-		/// <summary>
-		/// Rollbacks the transaction and calls the undo operations to recover the state befor the <see cref="ITransaction"/> has been created.
-		/// </summary>
 		public void Rollback()
 		{
 			this.owner.RollbackTransaction(this);
@@ -109,9 +96,6 @@ namespace Diskordia.UndoRedo.Transactions
 
 		#region IInvokable members
 
-		/// <summary>
-		/// Invokes all registered commands of this <see cref="Transaction"/>.
-		/// </summary>
 		public void Invoke()
 		{
 			while (this.invokables.Any())
@@ -125,23 +109,11 @@ namespace Diskordia.UndoRedo.Transactions
 
 		#region IEnumerable<IInvokable> members
 
-		/// <summary>
-		/// Returns an enumerator that iterates through the collection.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
-		/// </returns>
 		public IEnumerator<IInvokable> GetEnumerator()
 		{
 			return this.invokables.GetEnumerator();
 		}
 
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-		/// </returns>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return this.GetEnumerator();
@@ -153,9 +125,6 @@ namespace Diskordia.UndoRedo.Transactions
 
 		#region IDisposable Members
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
 		public void Dispose()
 		{
 			this.Dispose(true);
@@ -164,10 +133,6 @@ namespace Diskordia.UndoRedo.Transactions
 
 		#endregion
 
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>True</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
 			// check to see if Dispose has already been called
@@ -184,14 +149,7 @@ namespace Diskordia.UndoRedo.Transactions
 			}
 		}
 
-		/// <summary>
-		/// Finalizes an instance of the <see cref="Transaction"/> class.
-		/// </summary>
-		/// <remark>
-		/// Releases unmanaged resources and performs other cleanup operations before the
-		/// <see cref="Transaction"/> is reclaimed by garbage collection.
-		/// </remark>
-		~Transaction()
+		~TransactionStub()
 		{
 			this.Dispose(false);
 		}
