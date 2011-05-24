@@ -130,6 +130,33 @@ namespace Diskordia.UndoRedo
 		}
 
 		/// <summary>
+		/// Registers an operation as lambda expression, which will be invoked when an undo is performed.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the source.</typeparam>
+		/// <param name="target">The target instance.</param>
+		/// <param name="selector">The invocation delegate of the undo operation.</param>
+		/// <exception cref="ArgumentNullException">
+		///		<para><paramref name="target"/> is a <see langword="null"/> reference</para>
+		///		<para>- or -</para>
+		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
+		/// </exception>
+		public void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector)
+		{
+			if (target == null)
+			{
+				throw new ArgumentNullException("target");
+			}
+
+			if (selector == null)
+			{
+				throw new ArgumentNullException("selector");
+			}
+
+			LambdaExpressionInvokation<TSource> invokation = new LambdaExpressionInvokation<TSource>(target, selector);
+			this.RegisterInvokation(invokation);
+		}
+
+		/// <summary>
 		/// Registers an operation with the provided argument, which will be invoked when an undo is performed.
 		/// </summary>
 		/// <typeparam name="TArgument">The type of the argument.</typeparam>
@@ -183,6 +210,22 @@ namespace Diskordia.UndoRedo
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Prepares the target object as the subject for the dynamically invoked undo/redo operations.
+		/// </summary>
+		/// <param name="target">The target of the dynamic invokation.</param>
+		/// <returns>The dynamic object targeting the provided <paramref name="target"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="target"/> is a <see langword="null"/> reference.</exception>
+		public dynamic PrepareWithInvocationTarget(object target)
+		{
+			if (target == null)
+			{
+				throw new ArgumentNullException("target");
+			}
+
+			return new UndressedInvokationTarget(this, target);
 		}
 
 		/// <summary>

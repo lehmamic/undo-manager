@@ -66,15 +66,13 @@ namespace SimpleExample
 		public void SwitchOn()
 		{
 			Console.WriteLine("Switch on the light");
-			UndoManager.DefaultUndoManager.PrepareWithInvocationTarget(this)
-				.SwitchOff();
+			UndoManager.DefaultUndoManager.RegisterInvokation(this, l => l.SwitchOff());
 		}
 
 		public void SwitchOff()
 		{
 			Console.WriteLine("Switch off the light");
-			UndoManager.DefaultUndoManager.PrepareWithInvocationTarget(this)
-				.SwitchOn();
+			UndoManager.DefaultUndoManager.RegisterInvokation(this, l => l.SwitchOn());
 		}
 
 		public void SetColor(string color)
