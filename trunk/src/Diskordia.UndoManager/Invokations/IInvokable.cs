@@ -18,7 +18,7 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-namespace Diskordia.UndoRedo.Invocations
+namespace Diskordia.UndoRedo.Invokations
 {
 	/// <summary>
 	/// Interface providing members to invoke operations(s) on a target object.

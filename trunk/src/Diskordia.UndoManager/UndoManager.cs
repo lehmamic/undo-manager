@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using Diskordia.UndoRedo.Invocations;
+using Diskordia.UndoRedo.Invokations;
 using Diskordia.UndoRedo.Properties;
 using Diskordia.UndoRedo.State;
 using Diskordia.UndoRedo.Transactions;
@@ -44,11 +44,19 @@ namespace Diskordia.UndoRedo
 		private UndoRedoState state = UndoRedoState.Idle;
 		private string actionName = string.Empty;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UndoManager"/> class.
+		/// </summary>
 		public UndoManager()
 			: this(new TransactionFactory())
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UndoManager"/> class.
+		/// </summary>
+		/// <param name="transactionFactory">The transaction factory.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="transactionFactory"/> is a <see langword="null"/> reference.</exception>
 		internal UndoManager(ITransactionFactory transactionFactory)
 		{
 			if (transactionFactory == null)
@@ -122,29 +130,29 @@ namespace Diskordia.UndoRedo
 		}
 
 		/// <summary>
-		/// Registers an operation into the undo history.
+		/// Registers an operation with the provided argument, which will be invoked when an undo is performed.
 		/// </summary>
-		/// <typeparam name="TSource">The type of the source.</typeparam>
-		/// <param name="target">The target instance.</param>
+		/// <typeparam name="TArgument">The type of the argument.</typeparam>
 		/// <param name="selector">The invocation delegate of the undo operation.</param>
+		/// <param name="argument">The argument to pass the teh method call while invoking the registered invokation.</param>
 		/// <exception cref="ArgumentNullException">
-		///		<para><paramref name="target"/> is a <see langword="null"/> reference</para>
+		///		<para><paramref name="selector"/> is a <see langword="null"/> reference</para>
 		///		<para>- or -</para>
-		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
+		///		<para><paramref name="argument"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		public void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector)
+		public void RegisterInvokation<TArgument>(Action<TArgument> selector, TArgument argument)
 		{
-			if (target == null)
-			{
-				throw new ArgumentNullException("target");
-			}
-
 			if (selector == null)
 			{
 				throw new ArgumentNullException("selector");
 			}
 
-			ActionInvokation<TSource> invokation = new ActionInvokation<TSource>(target, selector);
+			if (argument == null)
+			{
+				throw new ArgumentNullException("argument");
+			}
+
+			ActionInvokation<TArgument> invokation = new ActionInvokation<TArgument>(selector, argument);
 			this.RegisterInvokation(invokation);
 		}
 
@@ -180,6 +188,7 @@ namespace Diskordia.UndoRedo
 		/// <summary>
 		/// Invokes the last recorded undo operation or transaction.
 		/// </summary>
+		/// <exception cref="ActionInvokationException">An error occured while invoking the registered undo operation.</exception>
 		public void Undo()
 		{
 			this.CommitTransactions();
@@ -195,7 +204,7 @@ namespace Diskordia.UndoRedo
 
 				using (this.InnerCreateTransaction(invocableToUndo.ActionName))
 				{
-					invocableToUndo.Invoke();
+					InvokeInvocation(invocableToUndo);
 				}
 			}
 		}
@@ -203,6 +212,7 @@ namespace Diskordia.UndoRedo
 		/// <summary>
 		/// Invokes the last recorded redo operation or transaction.
 		/// </summary>
+		/// <exception cref="ActionInvokationException">An error occured while invoking the registered redo operation.</exception>
 		public void Redo()
 		{
 			if (!this.redoHistory.Any())
@@ -216,7 +226,7 @@ namespace Diskordia.UndoRedo
 
 				using (this.InnerCreateTransaction(invocableToRedo.ActionName))
 				{
-					invocableToRedo.Invoke();
+					InvokeInvocation(invocableToRedo);
 				}
 			}
 		}
@@ -250,6 +260,7 @@ namespace Diskordia.UndoRedo
 		/// <summary>
 		/// Rollbacks the open transaction and invokes the regsitered undo operations.
 		/// </summary>
+		/// <exception cref="ActionInvokationException">An error occured while invoking the undo operations within the open transaction.</exception>
 		public void RollbackTransactions()
 		{
 			if (!this.openTransactions.Any())
@@ -371,6 +382,7 @@ namespace Diskordia.UndoRedo
 		/// <param name="transaction">The transaction to roll back.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
 		/// <exception cref="ArgumentException">The <see cref="UndoManager"/> does not contain <paramref name="transaction"/>.</exception>
+		/// <exception cref="ActionInvokationException">An error occured while invoking the undo operations within the transaction.</exception>
 		void ITransactionManager.RollbackTransaction(IInvokableTransaction transaction)
 		{
 			if (transaction == null)
@@ -386,7 +398,7 @@ namespace Diskordia.UndoRedo
 			while (this.openTransactions.Contains(transaction))
 			{
 				IInvokableTransaction toRollback = this.openTransactions.Pop();
-				toRollback.Invoke();
+				InvokeInvocation(toRollback);
 			}
 		}
 
@@ -411,6 +423,18 @@ namespace Diskordia.UndoRedo
 		private static string GetMenuItemTitelForAction(string operation, string actionName)
 		{
 			return !string.IsNullOrEmpty(actionName) ? string.Format(CultureInfo.CurrentUICulture, Resources.UndoRedoMenuLabelPattern, operation, actionName) : operation;
+		}
+
+		private static void InvokeInvocation(IInvokable invokation)
+		{
+			try
+			{
+				invokation.Invoke();
+			}
+			catch (Exception e)
+			{
+				throw new ActionInvokationException(Resources.ActionInvokeExceptionMessage, e);
+			}
 		}
 
 		#endregion

@@ -20,7 +20,7 @@
 
 using System;
 using System.Linq.Expressions;
-using Diskordia.UndoRedo.Invocations;
+using Diskordia.UndoRedo.Invokations;
 using Diskordia.UndoRedo.Transactions;
 
 namespace Diskordia.UndoRedo
@@ -75,6 +75,7 @@ namespace Diskordia.UndoRedo
 		/// <summary>
 		/// Invokes the last recorded redo operation or transaction.
 		/// </summary>
+		/// <exception cref="ActionInvokationException">An error occured while invoking the registered redo operation.</exception>
 		void Redo();
 
 		/// <summary>
@@ -88,17 +89,17 @@ namespace Diskordia.UndoRedo
 		string RedoMenuItemTitel { get; }
 
 		/// <summary>
-		/// Registers an operation into the undo history.
+		/// Registers an operation with the provided argument, which will be invoked when an undo is performed.
 		/// </summary>
-		/// <typeparam name="TSource">The type of the source.</typeparam>
-		/// <param name="target">The target instance.</param>
+		/// <typeparam name="TArgument">The type of the argument.</typeparam>
 		/// <param name="selector">The invocation delegate of the undo operation.</param>
+		/// <param name="argument">The argument to pass the teh method call while invoking the registered invokation.</param>
 		/// <exception cref="ArgumentNullException">
-		///		<para><paramref name="target"/> is a <see langword="null"/> reference</para>
+		///		<para><paramref name="selector"/> is a <see langword="null"/> reference</para>
 		///		<para>- or -</para>
-		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
+		///		<para><paramref name="argument"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector);
+		void RegisterInvokation<TArgument>(Action<TArgument> selector, TArgument argument);
 
 		/// <summary>
 		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.
@@ -110,11 +111,13 @@ namespace Diskordia.UndoRedo
 		/// <summary>
 		/// Rollbacks the open transaction and invokes the regsitered undo operations.
 		/// </summary>
+		/// <exception cref="ActionInvokationException">An error occured while invoking the undo operations within the open transaction.</exception>
 		void RollbackTransactions();
 
 		/// <summary>
 		/// Invokes the last recorded undo operation or transaction.
 		/// </summary>
+		/// <exception cref="ActionInvokationException">An error occured while invoking the registered undo operation.</exception>
 		void Undo();
 
 		/// <summary>

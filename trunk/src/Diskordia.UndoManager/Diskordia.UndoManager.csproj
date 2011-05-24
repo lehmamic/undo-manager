@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Diskordia.UndoRedo</RootNamespace>
     <AssemblyName>Diskordia.UndoManager</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -35,6 +35,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -80,9 +81,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Invocations\ActionInvokation.cs">
+    <Compile Include="Invokations\ActionInvokation.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Invokations\ActionInvokationException.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -99,7 +101,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IUndoManager.Extensions.cs" />
-    <Compile Include="Invocations\IInvokable.cs" />
+    <Compile Include="Invokations\IInvokable.cs" />
     <Compile Include="IUndoManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transactions\Transaction.cs" />

@@ -21,19 +21,17 @@
 using System;
 using System.Linq.Expressions;
 
-namespace Diskordia.UndoRedo.Invocations
+namespace Diskordia.UndoRedo.Invocation
 {
 	/// <summary>
-	/// The action invocation class includes the selector, the receiver and the arguments to call a method of an object.
+	/// The function invocation class includes the selector, the receiver and the arguments to call a method of an object.
 	/// </summary>
 	/// <typeparam name="TSource">The type of the source.</typeparam>
-	internal class ActionInvokation<TSource> : IInvokable
+	/// <typeparam name="TResult">The type of the result.</typeparam>
+	internal class FunctionInvocation<TSource, TResult> : Invocation<TSource>
 	{
-		private readonly Expression<Action<TSource>> expression;
-		private readonly TSource target;
-
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ActionInvokation&lt;TSource&gt;"/> class.
+		/// Initializes a new instance of the <see cref="FunctionInvocation&lt;TSource, TResult&gt;"/> class.
 		/// </summary>
 		/// <param name="target">The target on which the operation described by <paramref name="expression"/> has to be invoked.</param>
 		/// <param name="expression">The LinQ expressio describing the action to invoke.</param>
@@ -42,33 +40,34 @@ namespace Diskordia.UndoRedo.Invocations
 		///		<para>- or -</para>
 		///		<para><paramref name="expression"/> is a <see langword="null"/> reference.</para>
 		/// </exception>
-		public ActionInvokation(TSource target, Expression<Action<TSource>> expression)
+		public FunctionInvocation(TSource target, Expression<Func<TSource, TResult>> expression)
 		{
+			if (target == null)
+			{
+				throw new ArgumentNullException("expression");
+			}
+
 			if (target == null)
 			{
 				throw new ArgumentNullException("target");
 			}
 
-			if (expression == null)
-			{
-				throw new ArgumentNullException("expression");
-			}
-
-			this.target = target;
-			this.expression = expression;
+			this.Target = target;
+			this.Expression = expression;
 		}
-
-		#region IInvokable members
 
 		/// <summary>
-		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.
+		/// Gets the expression required to invoke the operation.
 		/// </summary>
-		public void Invoke()
-		{
-			Action<TSource> action = this.expression.Compile();
-			action(this.target);
-		}
+		public Expression<Func<TSource, TResult>> Expression { get; private set; }
 
-		#endregion
+		/// <summary>
+		/// Invokes this instance.
+		/// </summary>
+		public override void Invoke()
+		{
+			Func<TSource, TResult> func = this.Expression.Compile();
+			func(Target);
+		}
 	}
 }

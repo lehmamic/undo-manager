@@ -41,6 +41,7 @@ namespace Diskordia.UndoRedo.Transactions
 		/// <param name="transaction">The transaction to roll back.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="transaction"/> is a <see langword="null"/> reference.</exception>
 		/// <exception cref="ArgumentException">The <see cref="UndoManager"/> does not contain <paramref name="transaction"/>.</exception>
+		/// <exception cref="Diskordia.UndoRedo.Invokations.ActionInvokationException">An error occured while invoking the undo operations within the transaction.</exception>
 		void RollbackTransaction(IInvokableTransaction transaction);
 	}
 }

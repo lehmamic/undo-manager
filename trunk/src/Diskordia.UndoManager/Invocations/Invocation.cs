@@ -18,15 +18,44 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-using System;
-using System.Linq.Expressions;
-
-namespace Diskordia.UndoRedo
+namespace Diskordia.UndoRedo.Invocation
 {
 	/// <summary>
-	/// This class provides extension methods to support the usage of the <see cref="UndoManager"/>.
+	/// The invocation class includes the selector, the receiver and the arguments to call a method of an object.
 	/// </summary>
-	public static class UndoManagerExtensions
+	/// <typeparam name="TSource">The type of the source.</typeparam>
+	internal abstract class Invocation<TSource> : IInvokable
 	{
+		private string actionName = string.Empty;
+
+		/// <summary>
+		/// Gets or sets the target of the invocation.
+		/// </summary>
+		public TSource Target { get; protected set; }
+
+		#region IInvokable Members
+
+		/// <summary>
+		/// Invokes the operation(s) of this <see cref="IInvokable"/> instance.
+		/// </summary>
+		public abstract void Invoke();
+
+		/// <summary>
+		/// Name of the action, which is performed with this invocation.
+		/// </summary>
+		public string ActionName
+		{
+			get
+			{
+				return this.actionName;
+			}
+
+			set
+			{
+				this.actionName = value != null ? value : string.Empty;
+			}
+		}
+
+		#endregion
 	}
 }

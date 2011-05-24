@@ -34,7 +34,7 @@ namespace Diskordia.UndoRedo.Transactions
 		/// </summary>
 		/// <param name="transactionManager">the transaction manager handling the transactions.</param>
 		/// <returns>An factory implementing the <see cref="IInvokableTransaction"/> interface.</returns>
-		/// <exception cref="ArguentNullException"><paramref name="transactionManager"/> is a <see langword="null"/> reference.</exception>
+		/// <exception cref="System.ArgumentNullException"><paramref name="transactionManager"/> is a <see langword="null"/> reference.</exception>
 		public IInvokableTransaction CreateTransaction(ITransactionManager transactionManager)
 		{
 			if (transactionManager == null)
