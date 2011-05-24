@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Diskordia.UndoRedo.Invocations;
+using Diskordia.UndoRedo.Invokations;
 using System.Linq.Expressions;
 using UndoManagerTest;
 
@@ -123,26 +123,6 @@ namespace Diskordia.UndoRedo.Transactions
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvokation_ExpressionNullReference_ThrowsException()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
-
-			target.RegisterInvokation<string>(string.Empty, (Expression<Action<string>>)null);
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvokation_TargetNullReference_ThrowsException()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
-
-			target.RegisterInvokation<string>(null, s => s.Clone());
-		}
-
-		[TestMethod]
 		public void RegisterInvokation_AddsInvokationToTheInternalStack()
 		{
 			TransactionManagerStub transactionManager = new TransactionManagerStub();
@@ -154,20 +134,6 @@ namespace Diskordia.UndoRedo.Transactions
 			target.Invoke();
 
 			invokableMock.Verify(i => i.Invoke(), Times.Once());
-		}
-
-		[TestMethod]
-		public void RegisterInvokation_AddsExpressionToInternalStack()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
-
-			Mock<ITarget> targetMock = new Mock<ITarget>(MockBehavior.Loose);
-			target.RegisterInvokation<ITarget>(targetMock.Object, t => t.UndoOperation());
-
-			target.Invoke();
-
-			targetMock.Verify(t => t.UndoOperation(), Times.Once());
 		}
 
 		[TestMethod]
@@ -204,19 +170,19 @@ namespace Diskordia.UndoRedo.Transactions
 			TransactionManagerStub transactionManager = new TransactionManagerStub();
 			Transaction target = new Transaction(transactionManager);
 
-			Mock<ITarget> targetMock = new Mock<ITarget>(MockBehavior.Loose);
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
+			Mock<IInvokable> invokableMock1 = new Mock<IInvokable>(MockBehavior.Loose);
+			Mock<IInvokable> invokableMock2 = new Mock<IInvokable>(MockBehavior.Loose);
 
-			targetMock.Setup(t => t.UndoOperation()).Callback(() => invokableMock.Verify(i => i.Invoke(), Times.Once()));
-			invokableMock.Setup(i => i.Invoke()).Callback(() => targetMock.Verify(t => t.UndoOperation(), Times.Never()));
+			invokableMock1.Setup(i => i.Invoke()).Callback(() => invokableMock2.Verify(t => t.Invoke(), Times.Once()));
+			invokableMock2.Setup(i => i.Invoke()).Callback(() => invokableMock1.Verify(t => t.Invoke(), Times.Never()));
 
-			target.RegisterInvokation<ITarget>(targetMock.Object, t => t.UndoOperation());
-			target.RegisterInvokation(invokableMock.Object);
+			target.RegisterInvokation(invokableMock1.Object);
+			target.RegisterInvokation(invokableMock2.Object);
 
 			target.Invoke();
 
-			targetMock.Verify(t => t.UndoOperation(), Times.Once());
-			invokableMock.Verify(i => i.Invoke(), Times.Once());
+			invokableMock1.Verify(i => i.Invoke(), Times.Once());
+			invokableMock2.Verify(i => i.Invoke(), Times.Once());
 		}
 
 		public void Dispose_CommitsTransaction()

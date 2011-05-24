@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Diskordia.UndoRedo.Invocations;
+using Diskordia.UndoRedo.Invokations;
 
 namespace Diskordia.UndoRedo.Transactions
 {
@@ -53,33 +53,6 @@ namespace Diskordia.UndoRedo.Transactions
 		}
 
 		#region IInvokableTransaction members
-
-		/// <summary>
-		/// Registers an operation to the <see cref="Transaction"/>.
-		/// </summary>
-		/// <typeparam name="TSource">The type of the source.</typeparam>
-		/// <param name="target">The target of the undo operation.</param>
-		/// <param name="selector">The undo operation which will be invoked on the target.</param>
-		/// <exception cref="ArgumentNullException">
-		///		<para><paramref name="target"/> is a <see langword="null"/> reference</para>
-		///		<para>- or -</para>
-		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
-		/// </exception>
-		public void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector)
-		{
-			if (target == null)
-			{
-				throw new ArgumentNullException("target");
-			}
-
-			if (selector == null)
-			{
-				throw new ArgumentNullException("selector");
-			}
-
-			ActionInvokation<TSource> invokation = new ActionInvokation<TSource>(target, selector);
-			this.RegisterInvokation(invokation);
-		}
 
 		/// <summary>
 		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.

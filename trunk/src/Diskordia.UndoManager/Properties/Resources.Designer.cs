@@ -61,6 +61,15 @@ namespace Diskordia.UndoRedo.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occured while performing the registered operation.
+        /// </summary>
+        internal static string ActionInvokeExceptionMessage {
+            get {
+                return ResourceManager.GetString("ActionInvokeExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Redo.
         /// </summary>
         internal static string RedoMenuItemName {
@@ -79,7 +88,7 @@ namespace Diskordia.UndoRedo.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} {1}.
+        ///   Looks up a localized string similar to {0} &quot;{1}&quot;.
         /// </summary>
         internal static string UndoRedoMenuLabelPattern {
             get {
