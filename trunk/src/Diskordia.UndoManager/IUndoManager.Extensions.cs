@@ -19,7 +19,7 @@
  *****************************************************************************/
 
 using System;
-using System.Linq.Expressions;
+using Diskordia.UndoRedo.Invokations;
 
 namespace Diskordia.UndoRedo
 {
@@ -28,5 +28,25 @@ namespace Diskordia.UndoRedo
 	/// </summary>
 	public static class UndoManagerExtensions
 	{
+		/// <summary>
+		/// Prepares the target object as the subject for the dynamically invoked undo/redo operations.
+		/// </summary>
+		/// <param name="undoManager">The undo manager.</param>
+		/// <param name="target">The target of the dynamic invokation.</param>
+		/// <returns>The dynamic object targeting the provided <paramref name="target"/>.</returns>
+		public static dynamic PrepareWithInvocationTarget(this IUndoManager undoManager, object target)
+		{
+			if (undoManager == null)
+			{
+				throw new ArgumentNullException("undoManager");
+			}
+
+			if (target == null)
+			{
+				throw new ArgumentNullException("target");
+			}
+
+			return new UndressedInvokationTarget(undoManager, target);
+		}
 	}
 }

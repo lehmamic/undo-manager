@@ -30,58 +30,65 @@ namespace SimpleExample
 	{
 		static void Main(string[] args)
 		{
-			//ColoredLight light = new ColoredLight();
-			//Console.WriteLine("====== WORKING WITHOUT TRANSACTIONS ======");
-			//// switch on the light
-			//Console.WriteLine("Initial state");
-			//light.SwitchOn();
+			ColoredLight light = new ColoredLight();
+			Console.WriteLine("====== WORKING WITHOUT TRANSACTIONS ======");
+			// switch on the light
+			Console.WriteLine("Initial state");
+			light.SwitchOn();
 
-			//// undo switch on => switch off
-			//Console.WriteLine("Undo operation");
-			//UndoManager.DefaultUndoManager.Undo();
+			// undo switch on => switch off
+			Console.WriteLine("Undo operation");
+			UndoManager.DefaultUndoManager.Undo();
 
-			//// redo undone operation => switch on again
-			//Console.WriteLine("Redo undone operation");
-			//UndoManager.DefaultUndoManager.Redo();
+			// redo undone operation => switch on again
+			Console.WriteLine("Redo undone operation");
+			UndoManager.DefaultUndoManager.Redo();
 
-			//Console.WriteLine("====== WORKING WITH TRANSACTIONS ======");
-			//// switch on the light
-			//Console.WriteLine("Initial state");
-			//using (UndoManager.DefaultUndoManager.CreateTransaction())
-			//{
-			//    light.SwitchOn();
-			//    light.SetColor("red");
-			//}
+			Console.WriteLine("====== WORKING WITH TRANSACTIONS ======");
+			// switch on the light
+			Console.WriteLine("Initial state");
+			using (UndoManager.DefaultUndoManager.CreateTransaction())
+			{
+				light.SwitchOn();
+				light.SetColor("red");
+			}
 
-			//// undo operation within the transaction
-			//Console.WriteLine("Undo Transaction");
-			//UndoManager.DefaultUndoManager.Undo();
+			// undo operation within the transaction
+			Console.WriteLine("Undo Transaction");
+			UndoManager.DefaultUndoManager.Undo();
 		}
 	}
 
-	//class ColoredLight
-	//{
-	//    private string color = "white";
+	class ColoredLight
+	{
+		private string color = "white";
 
-	//    public void SwitchOn()
-	//    {
-	//        Console.WriteLine("Switch on the light");
-	//        UndoManager.DefaultUndoManager.RegisterInvokation(this, p => p.SwitchOff());
-	//    }
+		public void SwitchOn()
+		{
+			Console.WriteLine("Switch on the light");
+			UndoManager.DefaultUndoManager.PrepareWithInvocationTarget(this)
+				.SwitchOff();
+		}
 
-	//    public void SwitchOff()
-	//    {
-	//        Console.WriteLine("Switch off the light");
-	//        UndoManager.DefaultUndoManager.RegisterInvokation(this, p => p.SwitchOn());
-	//    }
+		public void SwitchOff()
+		{
+			Console.WriteLine("Switch off the light");
+			UndoManager.DefaultUndoManager.PrepareWithInvocationTarget(this)
+				.SwitchOn();
+		}
 
-	//    public void SetColor(string color)
-	//    {
-	//        string backup = this.color;
-	//        this.color = color;
-	//        Console.WriteLine("Set color {0}.", color);
+		public void SetColor(string color)
+		{
+			string backup = this.color;
 
-	//        UndoManager.DefaultUndoManager.RegisterInvokation(this, p => p.SetColor(backup));
-	//    }
-	//}
+			if (backup != color)
+			{
+				this.color = color;
+				Console.WriteLine("Set color {0}.", color);
+
+				UndoManager.DefaultUndoManager.PrepareWithInvocationTarget(this)
+					.SetColor(backup);
+			}
+		}
+	}
 }
