@@ -234,7 +234,10 @@ namespace Diskordia.UndoRedo
 		/// <exception cref="ActionInvokationException">An error occured while invoking the registered undo operation.</exception>
 		public void Undo()
 		{
-			this.CommitTransactions();
+			if (this.openTransactions.Any())
+			{
+				this.CommitTransactions();
+			}
 
 			if (!this.undoHistory.Any())
 			{
@@ -405,15 +408,18 @@ namespace Diskordia.UndoRedo
 				{
 					IInvokableTransaction toCommit = this.openTransactions.Pop();
 
-					if (toCommit.Equals(transaction))
+					if (toCommit.Any())
 					{
-						Stack<IInvokableTransaction> history = this.IsUndoing ? this.redoHistory : this.undoHistory;
-						history.Push(transaction);
-					}
-					else
-					{
-						IInvokableTransaction topMost = this.openTransactions.Peek();
-						topMost.RegisterInvokation(toCommit);
+						if (toCommit.Equals(transaction))
+						{
+							Stack<IInvokableTransaction> history = this.IsUndoing ? this.redoHistory : this.undoHistory;
+							history.Push(transaction);
+						}
+						else
+						{
+							IInvokableTransaction topMost = this.openTransactions.Peek();
+							topMost.RegisterInvokation(toCommit);
+						}
 					}
 				}
 			}

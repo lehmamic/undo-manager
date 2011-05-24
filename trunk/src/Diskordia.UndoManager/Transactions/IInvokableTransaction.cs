@@ -19,7 +19,7 @@
  *****************************************************************************/
 
 using System;
-using System.Linq.Expressions;
+using System.Collections.Generic;
 using Diskordia.UndoRedo.Invokations;
 
 namespace Diskordia.UndoRedo.Transactions
@@ -27,7 +27,7 @@ namespace Diskordia.UndoRedo.Transactions
 	/// <summary>
 	/// Inernal interface for transaction - undo manager interaction.
 	/// </summary>
-	internal interface IInvokableTransaction : ITransaction, IInvokable
+	internal interface IInvokableTransaction : ITransaction, IInvokable, IEnumerable<IInvokable>
 	{
 		/// <summary>
 		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.
@@ -37,7 +37,7 @@ namespace Diskordia.UndoRedo.Transactions
 		void RegisterInvokation(IInvokable invokation);
 
 		/// <summary>
-		/// Name of the action, which is performed with this invocation.
+		/// Gets or sets the name of the action, which is performed with this invocation.
 		/// </summary>
 		string ActionName { get; set; }
 	}
