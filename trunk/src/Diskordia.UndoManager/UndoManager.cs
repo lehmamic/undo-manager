@@ -402,7 +402,10 @@ namespace Diskordia.UndoRedo
 				throw new ArgumentException("Can not find the transaction to commit", "transaction");
 			}
 
-			using (new StateSwitcher(this, UndoRedoState.Committing))
+			// only switch the state to committing if the undo manager is not doing another task (e.g. undoing).
+			UndoRedoState state = this.state == UndoRedoState.Idle ? UndoRedoState.Committing : this.state;
+
+			using (new StateSwitcher(this, state))
 			{
 				while (this.openTransactions.Contains(transaction))
 				{
@@ -447,7 +450,6 @@ namespace Diskordia.UndoRedo
 			while (this.openTransactions.Contains(transaction))
 			{
 				IInvokableTransaction toRollback = this.openTransactions.Pop();
-				InvokeInvocation(toRollback);
 			}
 		}
 
