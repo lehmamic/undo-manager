@@ -88,14 +88,14 @@ namespace Diskordia.UndoRedo
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvokation_InvokationNullReference_ThrowsException()
+		public void RegisterInvocation_InvokationNullReference_ThrowsException()
 		{
 			UndoManager target = new UndoManager();
 			target.RegisterInvokation((IInvokable)null);
 		}
 
 		[TestMethod]
-		public void RegisterInvokation_Invokatio_RegistersInvokation()
+		public void RegisterInvocation_Invokatio_RegistersInvokation()
 		{
 			UndoManager target = new UndoManager();
 
@@ -108,7 +108,7 @@ namespace Diskordia.UndoRedo
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvokation_DelegateNullReference_ThrowsException()
+		public void RegisterInvocation_DelegateNullReference_ThrowsException()
 		{
 			UndoManager target = new UndoManager();
 			target.RegisterInvokation((Action<string>)null, string.Empty);
@@ -116,7 +116,7 @@ namespace Diskordia.UndoRedo
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvokation_ArgumentNullReference_ThrowsException()
+		public void RegisterInvocation_ArgumentNullReference_ThrowsException()
 		{
 			UndoManager target = new UndoManager();
 
@@ -125,7 +125,7 @@ namespace Diskordia.UndoRedo
 		}
 
 		[TestMethod]
-		public void RegisterInvokation_ActionDelegate_RegistersAction()
+		public void RegisterInvocation_ActionDelegate_RegistersAction()
 		{
 			UndoManager target = new UndoManager();
 
@@ -138,7 +138,7 @@ namespace Diskordia.UndoRedo
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvokation_ExpressionNullReference_ThrowsException()
+		public void RegisterInvocation_ExpressionNullReference_ThrowsException()
 		{
 			UndoManager target = new UndoManager();
 
@@ -148,7 +148,7 @@ namespace Diskordia.UndoRedo
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvokation_TargetNullReference_ThrowsException()
+		public void RegisterInvocation_TargetNullReference_ThrowsException()
 		{
 			UndoManager target = new UndoManager();
 
@@ -157,7 +157,7 @@ namespace Diskordia.UndoRedo
 		}
 
 		[TestMethod]
-		public void RegisterInvokation_LambdaExpression_RegistersLambdaExpression()
+		public void RegisterInvocation_LambdaExpression_RegistersLambdaExpression()
 		{
 			UndoManager target = new UndoManager();
 			Mock<ITarget> targetMock = new Mock<ITarget>();
@@ -168,12 +168,12 @@ namespace Diskordia.UndoRedo
 		}
 
 		[TestMethod]
-		public void RegisterInvokation_WithoutTransaction_RegistersInvokationWithPrivateTransaction()
+		public void RegisterInvocation_WithoutTransaction_RegistersInvocationWithPrivateTransaction()
 		{
 			TransactionFactoryStub factory = new TransactionFactoryStub();
 			UndoManager target = new UndoManager(factory);
 
-			factory.Transaction = new TransactionStub(target); ;
+			factory.Transaction = new TransactionStub(target);
 
 			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
 			target.RegisterInvokation(invokableMock.Object);
@@ -187,7 +187,30 @@ namespace Diskordia.UndoRedo
 		}
 
 		[TestMethod]
-		public void Undo_InvokationRegisteredWithoutTransactions_InvokesUndoOperation()
+		public void RegisterInvocation_WithTransaction_RegistersInvocationWithPublicTransaction()
+		{
+			TransactionFactoryStub factory = new TransactionFactoryStub();
+			UndoManager target = new UndoManager(factory);
+
+			factory.Transaction = new TransactionStub(target);
+
+			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
+
+			using (ITransaction transaction = target.CreateTransaction())
+			{
+				target.RegisterInvokation(invokableMock.Object);
+			}
+
+			Assert.IsTrue(factory.TransactionCreated);
+			Assert.IsTrue(((TransactionStub)factory.Transaction).InvokationRegistered);
+			Assert.IsTrue(((TransactionStub)factory.Transaction).Commited);
+
+			Assert.IsTrue(target.CanUndo);
+			Assert.IsFalse(target.CanRedo);
+		}
+
+		[TestMethod]
+		public void Undo_InvocationRegisteredWithoutTransaction_InvokesUndoOperation()
 		{
 			UndoManager target = new UndoManager();
 
@@ -199,6 +222,77 @@ namespace Diskordia.UndoRedo
 			invokableMock.Verify(i => i.Invoke(), Times.Once());
 			Assert.IsFalse(target.CanUndo);
 			Assert.IsFalse(target.CanRedo);
+		}
+
+		[TestMethod]
+		public void Undo_InvocationRegisteredWithTransaction_InvokesUndoOperation()
+		{
+			UndoManager target = new UndoManager();
+
+			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
+
+			using (ITransaction transaction = target.CreateTransaction())
+			{
+				target.RegisterInvokation(invokableMock.Object);
+			}
+
+			target.Undo();
+
+			invokableMock.Verify(i => i.Invoke(), Times.Once());
+			Assert.IsFalse(target.CanUndo);
+			Assert.IsFalse(target.CanRedo);
+		}
+
+		[TestMethod]
+		public void Undo_TransactionNotCommited_CommitsTransactionAndInvokesUndoOperation()
+		{
+			UndoManager target = new UndoManager();
+
+			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
+
+			ITransaction transaction = target.CreateTransaction();
+			target.RegisterInvokation(invokableMock.Object);
+
+			target.Undo();
+
+			invokableMock.Verify(i => i.Invoke(), Times.Once());
+			Assert.IsFalse(target.CanUndo);
+			Assert.IsFalse(target.CanRedo);
+		}
+
+		[TestMethod]
+		public void Undo_UndoOperationRegistersInocations_InvocationsAreRegisteredInRedoStack()
+		{
+			UndoManager target = new UndoManager();
+
+			Mock<ITarget> invokableMock = new Mock<ITarget>(MockBehavior.Strict);
+			invokableMock.Setup(i => i.UndoOperation())
+				.Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.RedoOperation()));
+
+			target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation());
+
+			target.Undo();
+
+			invokableMock.Verify(i => i.UndoOperation(), Times.Once());
+			invokableMock.Verify(i => i.RedoOperation(), Times.Never());
+			Assert.IsFalse(target.CanUndo);
+			Assert.IsTrue(target.CanRedo);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void Undo_NoInvocationsRegistered_ThrowsException()
+		{
+			UndoManager target = new UndoManager();
+			target.Undo();
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void Redo_NoRedoInvocationsRegistered_ThrowsException()
+		{
+			UndoManager target = new UndoManager();
+			target.Redo();
 		}
 	}
 }
