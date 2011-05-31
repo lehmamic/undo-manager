@@ -90,6 +90,7 @@
     <Compile Include="Transactions\TransactionStub.cs" />
     <Compile Include="Transactions\TransactionTests.cs" />
     <Compile Include="UndoManagerTests.cs" />
+    <Compile Include="UndoManagerTransactionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Diskordia.UndoManager\Diskordia.UndoManager.csproj">

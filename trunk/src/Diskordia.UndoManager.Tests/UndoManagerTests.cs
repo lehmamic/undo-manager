@@ -20,9 +20,9 @@
 
 using System;
 using Diskordia.UndoRedo.Invokations;
+using Diskordia.UndoRedo.Transactions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Diskordia.UndoRedo.Transactions;
 
 namespace Diskordia.UndoRedo
 {
@@ -95,7 +95,7 @@ namespace Diskordia.UndoRedo
 		}
 
 		[TestMethod]
-		public void RegisterInvocation_Invokatio_RegistersInvokation()
+		public void RegisterInvocation_Invokation_RegistersInvokation()
 		{
 			UndoManager target = new UndoManager();
 
@@ -116,7 +116,7 @@ namespace Diskordia.UndoRedo
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvocation_ArgumentNullReference_ThrowsException()
+		public void RegisterInvocation_ActionArgumentNullReference_ThrowsException()
 		{
 			UndoManager target = new UndoManager();
 
@@ -168,49 +168,15 @@ namespace Diskordia.UndoRedo
 		}
 
 		[TestMethod]
-		public void RegisterInvocation_WithoutTransaction_RegistersInvocationWithPrivateTransaction()
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void Undo_NoInvocationsRegistered_ThrowsException()
 		{
-			TransactionFactoryStub factory = new TransactionFactoryStub();
-			UndoManager target = new UndoManager(factory);
-
-			factory.Transaction = new TransactionStub(target);
-
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
-			target.RegisterInvokation(invokableMock.Object);
-
-			Assert.IsTrue(factory.TransactionCreated);
-			Assert.IsTrue(((TransactionStub)factory.Transaction).InvokationRegistered);
-			Assert.IsTrue(((TransactionStub)factory.Transaction).Commited);
-
-			Assert.IsTrue(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
+			UndoManager target = new UndoManager();
+			target.Undo();
 		}
 
 		[TestMethod]
-		public void RegisterInvocation_WithTransaction_RegistersInvocationWithPublicTransaction()
-		{
-			TransactionFactoryStub factory = new TransactionFactoryStub();
-			UndoManager target = new UndoManager(factory);
-
-			factory.Transaction = new TransactionStub(target);
-
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
-
-			using (ITransaction transaction = target.CreateTransaction())
-			{
-				target.RegisterInvokation(invokableMock.Object);
-			}
-
-			Assert.IsTrue(factory.TransactionCreated);
-			Assert.IsTrue(((TransactionStub)factory.Transaction).InvokationRegistered);
-			Assert.IsTrue(((TransactionStub)factory.Transaction).Commited);
-
-			Assert.IsTrue(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
-
-		[TestMethod]
-		public void Undo_InvocationRegisteredWithoutTransaction_InvokesUndoOperation()
+		public void Undo_InvocationRegistered_InvokesUndoOperation()
 		{
 			UndoManager target = new UndoManager();
 
@@ -225,43 +191,7 @@ namespace Diskordia.UndoRedo
 		}
 
 		[TestMethod]
-		public void Undo_InvocationRegisteredWithTransaction_InvokesUndoOperation()
-		{
-			UndoManager target = new UndoManager();
-
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
-
-			using (ITransaction transaction = target.CreateTransaction())
-			{
-				target.RegisterInvokation(invokableMock.Object);
-			}
-
-			target.Undo();
-
-			invokableMock.Verify(i => i.Invoke(), Times.Once());
-			Assert.IsFalse(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
-
-		[TestMethod]
-		public void Undo_TransactionNotCommited_CommitsTransactionAndInvokesUndoOperation()
-		{
-			UndoManager target = new UndoManager();
-
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
-
-			ITransaction transaction = target.CreateTransaction();
-			target.RegisterInvokation(invokableMock.Object);
-
-			target.Undo();
-
-			invokableMock.Verify(i => i.Invoke(), Times.Once());
-			Assert.IsFalse(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
-
-		[TestMethod]
-		public void Undo_UndoOperationRegistersInocations_InvocationsAreRegisteredInRedoStack()
+		public void Undo_UndoOperationRegistersInvocations_InvocationsAreRegisteredInRedoStack()
 		{
 			UndoManager target = new UndoManager();
 
@@ -281,18 +211,53 @@ namespace Diskordia.UndoRedo
 
 		[TestMethod]
 		[ExpectedException(typeof(InvalidOperationException))]
-		public void Undo_NoInvocationsRegistered_ThrowsException()
-		{
-			UndoManager target = new UndoManager();
-			target.Undo();
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void Redo_NoRedoInvocationsRegistered_ThrowsException()
 		{
 			UndoManager target = new UndoManager();
 			target.Redo();
+		}
+
+		[TestMethod]
+		public void Redo_RedoOperationAvailable_InvokesRedoOperation()
+		{
+			UndoManager target = new UndoManager();
+
+			Mock<ITarget> invokableMock = new Mock<ITarget>(MockBehavior.Strict);
+			invokableMock.Setup(i => i.UndoOperation())
+				.Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.RedoOperation()));
+			invokableMock.Setup(i => i.RedoOperation());
+
+			target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation());
+
+			target.Undo();
+			target.Redo();
+
+			invokableMock.Verify(i => i.UndoOperation(), Times.Once());
+			invokableMock.Verify(i => i.RedoOperation(), Times.Once());
+			Assert.IsFalse(target.CanUndo);
+			Assert.IsFalse(target.CanRedo);
+		}
+
+		[TestMethod]
+		public void Redo_RedoRegistersInvocation_InvocationsAreRegisteredInUndoStack()
+		{
+			UndoManager target = new UndoManager();
+
+			Mock<ITarget> invokableMock = new Mock<ITarget>(MockBehavior.Strict);
+			invokableMock.Setup(i => i.UndoOperation())
+				.Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.RedoOperation()));
+			invokableMock.Setup(i => i.RedoOperation())
+				.Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation()));
+
+			target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation());
+
+			target.Undo();
+			target.Redo();
+
+			invokableMock.Verify(i => i.UndoOperation(), Times.Once());
+			invokableMock.Verify(i => i.RedoOperation(), Times.Once());
+			Assert.IsTrue(target.CanUndo);
+			Assert.IsFalse(target.CanRedo);
 		}
 	}
 }
