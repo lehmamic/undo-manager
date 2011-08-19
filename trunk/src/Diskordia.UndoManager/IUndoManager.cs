@@ -79,16 +79,6 @@ namespace Diskordia.UndoRedo
 		void Redo();
 
 		/// <summary>
-		/// Gets action name of the redo operation.
-		/// </summary>
-		string RedoActionName { get; }
-
-		/// <summary>
-		/// Gets the localized titel of the menu item according to the current redo action name.
-		/// </summary>
-		string RedoMenuItemTitel { get; }
-
-		/// <summary>
 		/// Registers an operation as lambda expression, which will be invoked when an undo is performed.
 		/// </summary>
 		/// <typeparam name="TSource">The type of the source.</typeparam>
@@ -140,25 +130,5 @@ namespace Diskordia.UndoRedo
 		/// </summary>
 		/// <exception cref="ActionInvokationException">An error occured while invoking the registered undo operation.</exception>
 		void Undo();
-
-		/// <summary>
-		/// Gets the action name of the undo operation.
-		/// </summary>
-		string UndoActionName { get; }
-
-		/// <summary>
-		/// Gets the localized titel of the menu item according to the current undo action name.
-		/// </summary>
-		string UndoMenuItemTitel { get; }
-
-		/// <summary>
-		/// Sets the action name of the undo/redo operation, which will be appended to a localized undo/redo menu item label.
-		/// </summary>
-		/// <remarks>
-		/// The action name should always be set atthe same time like the registration of the operation.
-		/// </remarks>
-		/// <param name="actionName">The name of the undo redo operation.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="actionName"/> is a <see langword="null"/> reference.</exception>
-		void SetActionName(string actionName);
 	}
 }

@@ -42,7 +42,6 @@ namespace Diskordia.UndoRedo
 		private readonly Stack<IInvokableTransaction> openTransactions = new Stack<IInvokableTransaction>();
 
 		private UndoRedoState state = UndoRedoState.Idle;
-		private string actionName = string.Empty;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UndoManager"/> class.
@@ -204,7 +203,7 @@ namespace Diskordia.UndoRedo
 				}
 				else
 				{
-					using (IInvokableTransaction transaction = this.InnerCreateTransaction(this.actionName))
+					using (IInvokableTransaction transaction = this.InnerCreateTransaction(string.Empty))
 					{
 						transaction.RegisterInvokation(invokation);
 					}
@@ -285,7 +284,7 @@ namespace Diskordia.UndoRedo
 		/// <returns>A new instance of the <see cref="ITransaction"/> class.</returns>
 		public ITransaction CreateTransaction()
 		{
-			return this.InnerCreateTransaction(this.actionName);
+			return this.InnerCreateTransaction(string.Empty);
 		}
 
 		/// <summary>
@@ -316,68 +315,6 @@ namespace Diskordia.UndoRedo
 
 			IInvokableTransaction transaction = this.openTransactions.First();
 			transaction.Rollback();
-		}
-
-		/// <summary>
-		/// Sets the action name of the undo/redo operation, which will be appended to a localized undo/redo menu item label.
-		/// </summary>
-		/// <remarks>
-		/// The action name should always be set atthe same time like the registration of the operation.
-		/// </remarks>
-		/// <param name="actionName">The name of the undo redo operation.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="actionName"/> is a <see langword="null"/> reference.</exception>
-		public void SetActionName(string actionName)
-		{
-			if (actionName == null)
-			{
-				throw new ArgumentNullException("actionName");
-			}
-
-			this.actionName = actionName;
-
-			IInvokableTransaction currentTransaction = this.openTransactions.FirstOrDefault();
-			if (currentTransaction != null)
-			{
-				currentTransaction.ActionName = actionName;
-			}
-		}
-
-		/// <summary>
-		/// Gets the action name of the undo operation.
-		/// </summary>
-		public string UndoActionName
-		{
-			get
-			{
-				return this.undoHistory.Count > 0 ? this.undoHistory.Peek().ActionName : string.Empty;
-			}
-		}
-
-		/// <summary>
-		/// Gets the localized titel of the menu item according to the current undo action name.
-		/// </summary>
-		public string UndoMenuItemTitel
-		{
-			get { return UndoManager.GetUndoMenuTitleForUndoActionName(this.UndoActionName); }
-		}
-
-		/// <summary>
-		/// Gets the action name of the redo operation.
-		/// </summary>
-		public string RedoActionName
-		{
-			get
-			{
-				return this.redoHistory.Count > 0 ? this.redoHistory.Peek().ActionName : string.Empty;
-			}
-		}
-
-		/// <summary>
-		/// Gets the localized titel of the menu item according to the current redo action name.
-		/// </summary>
-		public string RedoMenuItemTitel
-		{
-			get { return UndoManager.GetRedoMenuTitleForRedoActionName(this.UndoActionName); }
 		}
 
 		#endregion
