@@ -3,16 +3,19 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Diskordia.UndoRedo.Invokations;
+using Diskordia.UndoRedo;
+using Moq;
 
-namespace UndoManagerTest
+namespace Diskordia.UndoRedo.Invokations
 {
 	/// <summary>
 	/// Summary description for InvocationTests
 	/// </summary>
 	[TestClass]
-	public class InvocationTests
+	public class ActionInvokationTests
 	{
-		public InvocationTests()
+		public ActionInvokationTests()
 		{
 			//
 			// TODO: Add constructor logic here
@@ -60,11 +63,34 @@ namespace UndoManagerTest
 		#endregion
 
 		[TestMethod]
-		public void TestMethod1()
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void Constructor_InvokationNullReference_ThrowsException()
 		{
-			//
-			// TODO: Add test logic here
-			//
+			string argument = "1234";
+
+			ActionInvokation<string> target = new ActionInvokation<string>(null, argument);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void Constructor_ArgumentNullReference_ThrowsException()
+		{
+			Mock<ITarget> targetMock = new Mock<ITarget>(MockBehavior.Strict);
+
+			ActionInvokation<string> target = new ActionInvokation<string>(targetMock.Object.Add, null);
+		}
+
+		[TestMethod]
+		public void Invoke_InvokesPassedDelegate()
+		{
+			string argument = "1234";
+			Mock<ITarget> targetMock = new Mock<ITarget>(MockBehavior.Strict);
+			targetMock.Setup(t => t.Add(argument));
+
+			ActionInvokation<string> target = new ActionInvokation<string>(targetMock.Object.Add, argument);
+			target.Invoke();
+
+			targetMock.Verify(t => t.Add(argument), Times.Once());
 		}
 	}
 }

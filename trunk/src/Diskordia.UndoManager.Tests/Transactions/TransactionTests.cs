@@ -26,7 +26,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Diskordia.UndoRedo.Invokations;
 using System.Linq.Expressions;
-using UndoManagerTest;
 
 namespace Diskordia.UndoRedo.Transactions
 {
