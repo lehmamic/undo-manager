@@ -29,7 +29,7 @@ namespace Diskordia.UndoRedo.Invokations
 	/// <summary>
 	/// An <see cref="IInvokable"/> implementation that invokes an operation based on reflection informations.
 	/// </summary>
-	internal class ReflectionBasedInvokation : IInvokable
+	internal sealed class ReflectionBasedInvokation : IInvokable
 	{
 		private const BindingFlags MEMBERSFLAGS =
 		BindingFlags.Instance | BindingFlags.Static |

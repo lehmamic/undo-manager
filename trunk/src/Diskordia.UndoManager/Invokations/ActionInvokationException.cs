@@ -26,7 +26,7 @@ namespace Diskordia.UndoRedo.Invokations
 	/// <summary>
 	/// Represents an error occur during invokation of an undo or redo operation.
 	/// </summary>
-	public class ActionInvokationException : Exception
+	public sealed class ActionInvokationException : Exception
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ActionInvokationException"/> class.

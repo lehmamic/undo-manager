@@ -26,7 +26,7 @@ namespace Diskordia.UndoRedo.Invokations
 	/// The action invocation class includes the selector and the arguments to call a method of an object.
 	/// </summary>
 	/// <typeparam name="TArgument">The type of the argument.</typeparam>
-	public class ActionInvokation<TArgument> : IInvokable
+	public sealed class ActionInvokation<TArgument> : IInvokable
 	{
 		private readonly Action<TArgument> selector;
 		private readonly TArgument argument;

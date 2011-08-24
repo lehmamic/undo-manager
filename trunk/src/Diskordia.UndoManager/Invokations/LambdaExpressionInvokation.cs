@@ -27,7 +27,7 @@ namespace Diskordia.UndoRedo.Invokations
 	/// The action invocation class includes the selector, the receiver and the arguments to call a method of an object.
 	/// </summary>
 	/// <typeparam name="TSource">The type of the source.</typeparam>
-	public class LambdaExpressionInvokation<TSource> : IInvokable
+	public sealed class LambdaExpressionInvokation<TSource> : IInvokable
 	{
 		private readonly Expression<Action<TSource>> expression;
 		private readonly TSource target;
