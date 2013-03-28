@@ -20,7 +20,6 @@
 
 using System;
 using Diskordia.UndoRedo.Invokations;
-using Diskordia.UndoRedo.Transactions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
