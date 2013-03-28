@@ -19,11 +19,9 @@
  *****************************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 using Diskordia.UndoRedo.Invokations;
 using Diskordia.UndoRedo.Properties;
 using Diskordia.UndoRedo.State;
@@ -129,60 +127,6 @@ namespace Diskordia.UndoRedo
 		}
 
 		/// <summary>
-		/// Registers an operation as lambda expression, which will be invoked when an undo is performed.
-		/// </summary>
-		/// <typeparam name="TSource">The type of the source.</typeparam>
-		/// <param name="target">The target instance.</param>
-		/// <param name="selector">The invocation delegate of the undo operation.</param>
-		/// <exception cref="ArgumentNullException">
-		///		<para><paramref name="target"/> is a <see langword="null"/> reference</para>
-		///		<para>- or -</para>
-		///		<para><paramref name="selector"/> is a <see langword="null"/> reference.</para>
-		/// </exception>
-		public void RegisterInvokation<TSource>(TSource target, Expression<Action<TSource>> selector)
-		{
-			if (target == null)
-			{
-				throw new ArgumentNullException("target");
-			}
-
-			if (selector == null)
-			{
-				throw new ArgumentNullException("selector");
-			}
-
-			LambdaExpressionInvokation<TSource> invokation = new LambdaExpressionInvokation<TSource>(target, selector);
-			this.RegisterInvokation(invokation);
-		}
-
-		/// <summary>
-		/// Registers an operation with the provided argument, which will be invoked when an undo is performed.
-		/// </summary>
-		/// <typeparam name="TArgument">The type of the argument.</typeparam>
-		/// <param name="selector">The invocation delegate of the undo operation.</param>
-		/// <param name="argument">The argument to pass the teh method call while invoking the registered invokation.</param>
-		/// <exception cref="ArgumentNullException">
-		///		<para><paramref name="selector"/> is a <see langword="null"/> reference</para>
-		///		<para>- or -</para>
-		///		<para><paramref name="argument"/> is a <see langword="null"/> reference.</para>
-		/// </exception>
-		public void RegisterInvokation<TArgument>(Action<TArgument> selector, TArgument argument)
-		{
-			if (selector == null)
-			{
-				throw new ArgumentNullException("selector");
-			}
-
-			if (argument == null)
-			{
-				throw new ArgumentNullException("argument");
-			}
-
-			ActionInvokation<TArgument> invokation = new ActionInvokation<TArgument>(selector, argument);
-			this.RegisterInvokation(invokation);
-		}
-
-		/// <summary>
 		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.
 		/// </summary>
 		/// <param name="invokation">The invokation to register.</param>
@@ -209,22 +153,6 @@ namespace Diskordia.UndoRedo
 					}
 				}
 			}
-		}
-
-		/// <summary>
-		/// Prepares the target object as the subject for the dynamically invoked undo/redo operations.
-		/// </summary>
-		/// <param name="target">The target of the dynamic invokation.</param>
-		/// <returns>The dynamic object targeting the provided <paramref name="target"/>.</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="target"/> is a <see langword="null"/> reference.</exception>
-		public dynamic PrepareWithInvocationTarget(object target)
-		{
-			if (target == null)
-			{
-				throw new ArgumentNullException("target");
-			}
-
-			return new UndressedInvokationTarget(this, target);
 		}
 
 		/// <summary>
