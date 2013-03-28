@@ -18,21 +18,23 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-using Diskordia.UndoRedo.Invokations;
+using Diskordia.UndoRedo.Proxies;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Diskordia.UndoRedo.Proxies
+namespace Diskordia.UndoRedo.Invokations
 {
 	[TestClass]
-	public class InvokationRegistrationProxyTest
+	public class TransparentProxyMethodInvokationTest
 	{
 		[TestMethod]
-		public void Invoke_TransparentProxyMethodCalled_RegistersMethodCall()
+		public void Invoke()
 		{
 			// arrange
 			var undoManager = new Mock<IUndoManager>();
 			var target = new Mock<ITarget>();
+
+			undoManager.Setup(m => m.RegisterInvokation(It.IsAny<IInvokable>())).Callback<IInvokable>(i => i.Invoke());
 
 			var proxy = new InvokationRegistrationProxy<ITarget>(undoManager.Object, target.Object);
 			var transparentProxy = (ITarget)proxy.GetTransparentProxy();
@@ -41,7 +43,7 @@ namespace Diskordia.UndoRedo.Proxies
 			transparentProxy.Add("TestItem");
 
 			// assert
-			undoManager.Verify(m => m.RegisterInvokation(It.IsAny<TransparentProxyMethodInvokation>()));
+			target.Verify(t => t.Add("TestItem"));
 		}
 	}
 }

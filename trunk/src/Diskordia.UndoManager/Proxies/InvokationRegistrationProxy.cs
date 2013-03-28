@@ -1,8 +1,29 @@
-﻿using System;
+﻿/*****************************************************************************
+ * UndoManager. An easy to use undo API.
+ * Copyright (C) 2009 Michael Lehmann 
+ ******************************************************************************
+ * This file is part of UndoManager.
+ *
+ * UndoManager is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UndoManager is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************************/
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
 using System.Security;
+using Diskordia.UndoRedo.Invokations;
 
 namespace Diskordia.UndoRedo.Proxies
 {
@@ -40,8 +61,7 @@ namespace Diskordia.UndoRedo.Proxies
 		///<param name="fromType">The type to cast to. </param>
 		///<param name="o">The object for which to check casting. </param>
 		///<exception cref="T:System.Security.SecurityException">The immediate caller makes the call through a reference to the interface and does not have infrastructure permission. </exception>
-		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
-			Justification = "Validation done by Guard class.")]
+		[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods", Justification = "Validation done by Guard class.")]
 		[SecurityCritical]
 		public bool CanCastTo(Type fromType, object o)
 		{
@@ -72,7 +92,6 @@ namespace Diskordia.UndoRedo.Proxies
 		public string TypeName
 		{
 			[SecurityCritical] get { return this.typeName; }
-
 			[SecurityCritical] set { this.typeName = value; }
 		}
 
@@ -82,7 +101,12 @@ namespace Diskordia.UndoRedo.Proxies
 
 		public override IMessage Invoke(IMessage msg)
 		{
-			return msg;
+			var callMessage = (IMethodCallMessage)msg;
+			var invokation = new TransparentProxyMethodInvokation(this.target, callMessage);
+			this.undoManager.RegisterInvokation(invokation);
+
+			var arguments = new object[0];
+			return new ReturnMessage(null, arguments, arguments.Length, callMessage.LogicalCallContext, callMessage);
 		}
 
 		#endregion

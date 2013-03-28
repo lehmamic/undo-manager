@@ -87,6 +87,7 @@
     <Compile Include="Invokations\ActionInvokationTests.cs" />
     <Compile Include="Invokations\LambdaExpressionInvokationTests.cs" />
     <Compile Include="Invokations\ReflectionBasedInvocationTests.cs" />
+    <Compile Include="Invokations\TransparentProxyMethodInvokationTest.cs" />
     <Compile Include="ITarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxies\InvokationRegistrationProxyTest.cs" />
