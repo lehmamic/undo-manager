@@ -21,6 +21,7 @@
 using System;
 using System.Linq.Expressions;
 using Diskordia.UndoRedo.Invokations;
+using Diskordia.UndoRedo.Proxies;
 
 namespace Diskordia.UndoRedo
 {
@@ -102,6 +103,12 @@ namespace Diskordia.UndoRedo
 			}
 
 			return new UndressedInvokationTarget(undoManager, target);
+		}
+
+		public static TTarget RegisterFor<TTarget>(this IUndoManager undoManager, TTarget target)
+		{
+			var proxy = new InvokationRegistrationProxy<TTarget>(undoManager, target);
+			return (TTarget)proxy.GetTransparentProxy();
 		}
 	}
 }

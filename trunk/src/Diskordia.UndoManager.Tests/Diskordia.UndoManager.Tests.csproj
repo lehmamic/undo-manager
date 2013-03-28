@@ -89,6 +89,7 @@
     <Compile Include="Invokations\ReflectionBasedInvocationTests.cs" />
     <Compile Include="ITarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proxies\InvokationRegistrationProxyTest.cs" />
     <Compile Include="Transactions\TransactionFactoryStub.cs" />
     <Compile Include="Transactions\TransactionManagerStub.cs" />
     <Compile Include="Transactions\TransactionStub.cs" />
