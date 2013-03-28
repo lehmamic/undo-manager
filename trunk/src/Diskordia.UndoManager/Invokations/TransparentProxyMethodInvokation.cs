@@ -18,30 +18,35 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-using Diskordia.UndoRedo.Invokations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+using System;
+using System.Runtime.Remoting.Messaging;
 
-namespace Diskordia.UndoRedo.Proxies
+namespace Diskordia.UndoRedo.Invokations
 {
-	[TestClass]
-	public class InvokationRegistrationProxyTest
+	public class TransparentProxyMethodInvokation : IInvokable
 	{
-		[TestMethod]
-		public void Invoke_TransparentProxyMethodCalled_RegistersMethodCall()
+		private readonly object target;
+		private readonly IMethodCallMessage methodCallMessage;
+
+		public TransparentProxyMethodInvokation(object target, IMethodCallMessage methodCallMessage)
 		{
-			// arrange
-			var undoManager = new Mock<IUndoManager>();
-			var target = new Mock<ITarget>();
+			if (target == null)
+			{
+				throw new ArgumentNullException("target");
+			}
 
-			var proxy = new InvokationRegistrationProxy<ITarget>(undoManager.Object, target.Object);
-			var transparentProxy = (ITarget)proxy.GetTransparentProxy();
+			if (methodCallMessage == null)
+			{
+				throw new ArgumentNullException("methodCallMessage");
+			}
 
-			// act
-			transparentProxy.Add("TestItem");
+			this.target = target;
+			this.methodCallMessage = methodCallMessage;
+		}
 
-			// assert
-			undoManager.Verify(m => m.RegisterInvokation(It.IsAny<TransparentProxyMethodInvokation>()));
+		public void Invoke()
+		{
+			this.methodCallMessage.MethodBase.Invoke(target, this.methodCallMessage.Args);
 		}
 	}
 }

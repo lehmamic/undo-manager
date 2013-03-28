@@ -19,9 +19,6 @@
  *****************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Diskordia.UndoRedo;
 
 namespace SimpleExample
@@ -84,7 +81,7 @@ namespace SimpleExample
 				this.color = color;
 				Console.WriteLine("Set color {0}.", color);
 
-				UndoManager.DefaultUndoManager.PrepareWithInvocationTarget(this)
+				UndoManager.DefaultUndoManager.RegisterInvokationFor(this)
 					.SetColor(backup);
 			}
 		}
