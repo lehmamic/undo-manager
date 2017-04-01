@@ -28,4 +28,4 @@ public void Remove(string item)
 }
 }}
 ```
-See [QuickStart](Quickstart) for more examples.
+See [QuickStart](Quickstart.md) for more examples.
