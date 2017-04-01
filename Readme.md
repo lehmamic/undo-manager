@@ -28,4 +28,4 @@ public void Remove(string item)
 }
 }}
 ```
-See [QuickStart](https://github.com/lehmamic/undo-manager/blob/master/QuickStart.md) for more examples.
+See [QuickStart](https://github.com/lehmamic/undo-manager/wiki/Quickstart) for more examples.
