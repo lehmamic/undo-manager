@@ -7,7 +7,7 @@ Most undo frameworks uses so called actions or commands to describe the undo and
 Furthermore I found it not convenient to keep adding actions for every operation which supports the undo operations. I prefer a declarative way which is more easy to use.
 
 # Simple example
-```
+```csharp
 this.Add("Monday");
 this.Add("Wednesday");
 
