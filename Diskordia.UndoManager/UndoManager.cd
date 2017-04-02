@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Diskordia.UndoRedo.State.StateSwitcher" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAIAACAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>State\StateSwitcher.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Diskordia.UndoRedo.UndoManager" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="5.5" Y="1" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Diskordia.UndoRedo.UndoManager.SingletonCreator" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>UndoManager.SingletonCreator.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AEQIABgQJAAABAAAAAAYAgBHEAAAAACEAQAAAIEBkBA=</HashCode>
+      <FileName>UndoManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Diskordia.UndoRedo.Transactions.Transaction" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="5.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAEAQACAIgBACAAAEAAAAAAAAAAAEAEAEAAAAAAA=</HashCode>
+      <FileName>Transactions\Transaction.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Diskordia.UndoRedo.Transactions.TransactionFactory" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="5.25" Y="6" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Transactions\TransactionFactory.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Diskordia.UndoRedo.Invokations.ActionInvokation&lt;TArgument&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="0.75" Y="4.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAIAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Invokations\ActionInvokation.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Diskordia.UndoRedo.Invokations.LambdaExpressionInvokation&lt;TSource&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="0.75" Y="6" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAIAAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Invokations\LambdaExpressionInvokation.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Diskordia.UndoRedo.Invokations.ReflectionBasedInvokation" Collapsed="true">
+    <Position X="0.75" Y="7.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAQBAAAAAAAIAACAIEAAAAAAAAAAAAAAIBAAAAAAAAA=</HashCode>
+      <FileName>Invokations\ReflectionBasedInvokation.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Diskordia.UndoRedo.State.IStateHost">
+    <Position X="7.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>State\IStateHost.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Diskordia.UndoRedo.IUndoManager">
+    <Position X="5.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQJAAABAAAAAAQAAADEAAAAAAAAQAAAAEAgAA=</HashCode>
+      <FileName>IUndoManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Diskordia.UndoRedo.Invokations.IInvokable">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Invokations\IInvokable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Diskordia.UndoRedo.Transactions.ITransaction">
+    <Position X="3.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Transactions\ITransaction.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Diskordia.UndoRedo.Transactions.ITransactionManager">
+    <Position X="7.75" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Transactions\ITransactionManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Diskordia.UndoRedo.Transactions.ITransactionFactory">
+    <Position X="7.75" Y="5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Transactions\ITransactionFactory.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Diskordia.UndoRedo.Transactions.IInvokableTransaction">
+    <Position X="2" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Transactions\IInvokableTransaction.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Diskordia.UndoRedo.State.UndoRedoState" Collapsed="true">
+    <Position X="9.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAIAAAAQAAAAQAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>State\UndoRedoState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
