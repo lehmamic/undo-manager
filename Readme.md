@@ -26,6 +26,5 @@ public void Remove(string item)
     Console.WriteLine("Remove {0}", item);
     UndoManager.DefaultUndoManager.RegisterInvocation(this, p => p.Add(item)));
 }
-}}
 ```
 See [QuickStart](https://github.com/lehmamic/undo-manager/wiki/Quickstart) for more examples.
