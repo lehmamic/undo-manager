@@ -23,7 +23,7 @@ namespace Diskordia.UndoRedo.Transactions
 	/// <summary>
 	/// Interface to decouple the factor whichis creating instances of <see cref="IInvokableTransaction"/> implementations.
 	/// </summary>
-	internal interface ITransactionFactory
+	public interface ITransactionFactory
 	{
 		/// <summary>
 		/// Create an instance of the <see cref="IInvokableTransaction"/>.

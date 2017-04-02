@@ -20,196 +20,191 @@
 
 using System;
 using Diskordia.UndoRedo.Invokations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 
 namespace Diskordia.UndoRedo
 {
-	/// <summary>
-	/// Summary description for UndoManagerTests
-	/// </summary>
-	[TestClass]
-	public class UndoManagerTests
-	{
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void Constrcutor_TransactionFactoryNullReference_ThrowsException()
-		{
-			var target = new UndoManager(null);
-		}
+    public class UndoManagerTests
+    {
+        [Fact]
+        public void Constrcutor_TransactionFactoryNullReference_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new UndoManager(null));
+        }
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvocation_InvokationNullReference_ThrowsException()
-		{
-			var target = new UndoManager();
-			target.RegisterInvokation((IInvokable)null);
-		}
+        [Fact]
+        public void RegisterInvocation_InvokationNullReference_ThrowsException()
+        {
+            var target = new UndoManager();
 
-		[TestMethod]
-		public void RegisterInvocation_Invokation_RegistersInvokation()
-		{
-			var target = new UndoManager();
+            Assert.Throws<ArgumentNullException>(() => target.RegisterInvokation((IInvokable)null));
+        }
 
-			var invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
-			target.RegisterInvokation(invokableMock.Object);
+        [Fact]
+        public void RegisterInvocation_Invokation_RegistersInvokation()
+        {
+            var target = new UndoManager();
 
-			Assert.IsTrue(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
+            var invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
+            target.RegisterInvokation(invokableMock.Object);
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvocation_DelegateNullReference_ThrowsException()
-		{
-			var target = new UndoManager();
-			target.RegisterInvokation((Action<string>)null, string.Empty);
-		}
+            Assert.True(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvocation_ActionArgumentNullReference_ThrowsException()
-		{
-			var target = new UndoManager();
+        [Fact]
+        public void RegisterInvocation_DelegateNullReference_ThrowsException()
+        {
+            var target = new UndoManager();
 
-			var targetMock = new Mock<ITarget>();
-			target.RegisterInvokation(targetMock.Object.Add, (string)null);
-		}
+            Assert.Throws<ArgumentNullException>(() => target.RegisterInvokation((Action<string>)null, string.Empty));
+        }
 
-		[TestMethod]
-		public void RegisterInvocation_ActionDelegate_RegistersAction()
-		{
-			var target = new UndoManager();
+        [Fact]
+        public void RegisterInvocation_ActionArgumentNullReference_ThrowsException()
+        {
+            var target = new UndoManager();
 
-			var targetMock = new Mock<ITarget>();
-			target.RegisterInvokation(targetMock.Object.Add, "test");
+            var targetMock = new Mock<ITarget>();
 
-			Assert.IsTrue(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
+            Assert.Throws<ArgumentNullException>(() => target.RegisterInvokation(targetMock.Object.Add, (string)null));
+        }
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvocation_ExpressionNullReference_ThrowsException()
-		{
-			var target = new UndoManager();
+        [Fact]
+        public void RegisterInvocation_ActionDelegate_RegistersAction()
+        {
+            var target = new UndoManager();
 
-			var targetMock = new Mock<ITarget>();
-			target.RegisterInvokation(targetMock.Object, null);
-		}
+            var targetMock = new Mock<ITarget>();
+            target.RegisterInvokation(targetMock.Object.Add, "test");
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvocation_TargetNullReference_ThrowsException()
-		{
-			var target = new UndoManager();
+            Assert.True(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
 
-			var targetMock = new Mock<ITarget>();
-			target.RegisterInvokation<ITarget>(null, t => t.UndoOperation());
-		}
+        [Fact]
+        public void RegisterInvocation_ExpressionNullReference_ThrowsException()
+        {
+            var target = new UndoManager();
 
-		[TestMethod]
-		public void RegisterInvocation_LambdaExpression_RegistersLambdaExpression()
-		{
-			var target = new UndoManager();
-			var targetMock = new Mock<ITarget>();
-			target.RegisterInvokation(targetMock.Object, t => t.UndoOperation());
+            var targetMock = new Mock<ITarget>();
 
-			Assert.IsTrue(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
+            Assert.Throws<ArgumentNullException>(() => target.RegisterInvokation(targetMock.Object, null));
+        }
 
-		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public void Undo_NoInvocationsRegistered_ThrowsException()
-		{
-			var target = new UndoManager();
-			target.Undo();
-		}
+        [Fact]
+        public void RegisterInvocation_TargetNullReference_ThrowsException()
+        {
+            var target = new UndoManager();
 
-		[TestMethod]
-		public void Undo_InvocationRegistered_InvokesUndoOperation()
-		{
-			var target = new UndoManager();
+            var targetMock = new Mock<ITarget>();
 
-			var invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
-			target.RegisterInvokation(invokableMock.Object);
+            Assert.Throws<ArgumentNullException>(() => target.RegisterInvokation<ITarget>(null, t => t.UndoOperation()));
+        }
 
-			target.Undo();
+        [Fact]
+        public void RegisterInvocation_LambdaExpression_RegistersLambdaExpression()
+        {
+            var target = new UndoManager();
+            var targetMock = new Mock<ITarget>();
+            target.RegisterInvokation(targetMock.Object, t => t.UndoOperation());
 
-			invokableMock.Verify(i => i.Invoke(), Times.Once());
-			Assert.IsFalse(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
+            Assert.True(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
 
-		[TestMethod]
-		public void Undo_UndoOperationRegistersInvocations_InvocationsAreRegisteredInRedoStack()
-		{
-			var target = new UndoManager();
+        [Fact]
+        public void Undo_NoInvocationsRegistered_ThrowsException()
+        {
+            var target = new UndoManager();
 
-			var invokableMock = new Mock<ITarget>(MockBehavior.Strict);
-			invokableMock.Setup(i => i.UndoOperation())
-				.Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.RedoOperation()));
+            Assert.Throws<InvalidOperationException>(() => target.Undo());
+        }
 
-			target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation());
+        [Fact]
+        public void Undo_InvocationRegistered_InvokesUndoOperation()
+        {
+            var target = new UndoManager();
 
-			target.Undo();
+            var invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
+            target.RegisterInvokation(invokableMock.Object);
 
-			invokableMock.Verify(i => i.UndoOperation(), Times.Once());
-			invokableMock.Verify(i => i.RedoOperation(), Times.Never());
-			Assert.IsFalse(target.CanUndo);
-			Assert.IsTrue(target.CanRedo);
-		}
+            target.Undo();
 
-		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public void Redo_NoRedoInvocationsRegistered_ThrowsException()
-		{
-			var target = new UndoManager();
-			target.Redo();
-		}
+            invokableMock.Verify(i => i.Invoke(), Times.Once());
+            Assert.False(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
 
-		[TestMethod]
-		public void Redo_RedoOperationAvailable_InvokesRedoOperation()
-		{
-			var target = new UndoManager();
+        [Fact]
+        public void Undo_UndoOperationRegistersInvocations_InvocationsAreRegisteredInRedoStack()
+        {
+            var target = new UndoManager();
 
-			var invokableMock = new Mock<ITarget>(MockBehavior.Strict);
-			invokableMock.Setup(i => i.UndoOperation())
-				.Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.RedoOperation()));
-			invokableMock.Setup(i => i.RedoOperation());
+            var invokableMock = new Mock<ITarget>(MockBehavior.Strict);
+            invokableMock.Setup(i => i.UndoOperation())
+                .Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.RedoOperation()));
 
-			target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation());
+            target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation());
 
-			target.Undo();
-			target.Redo();
+            target.Undo();
 
-			invokableMock.Verify(i => i.UndoOperation(), Times.Once());
-			invokableMock.Verify(i => i.RedoOperation(), Times.Once());
-			Assert.IsFalse(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
+            invokableMock.Verify(i => i.UndoOperation(), Times.Once());
+            invokableMock.Verify(i => i.RedoOperation(), Times.Never());
+            Assert.False(target.CanUndo);
+            Assert.True(target.CanRedo);
+        }
 
-		[TestMethod]
-		public void Redo_RedoRegistersInvocation_InvocationsAreRegisteredInUndoStack()
-		{
-			var target = new UndoManager();
+        [Fact]
+        public void Redo_NoRedoInvocationsRegistered_ThrowsException()
+        {
+            var target = new UndoManager();
 
-			var invokableMock = new Mock<ITarget>(MockBehavior.Strict);
-			invokableMock.Setup(i => i.UndoOperation())
-				.Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.RedoOperation()));
-			invokableMock.Setup(i => i.RedoOperation())
-				.Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation()));
+            Assert.Throws<InvalidOperationException>(() => target.Redo());
+        }
 
-			target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation());
+        [Fact]
+        public void Redo_RedoOperationAvailable_InvokesRedoOperation()
+        {
+            var target = new UndoManager();
 
-			target.Undo();
-			target.Redo();
+            var invokableMock = new Mock<ITarget>(MockBehavior.Strict);
+            invokableMock.Setup(i => i.UndoOperation())
+                .Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.RedoOperation()));
+            invokableMock.Setup(i => i.RedoOperation());
 
-			invokableMock.Verify(i => i.UndoOperation(), Times.Once());
-			invokableMock.Verify(i => i.RedoOperation(), Times.Once());
-			Assert.IsTrue(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
-	}
+            target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation());
+
+            target.Undo();
+            target.Redo();
+
+            invokableMock.Verify(i => i.UndoOperation(), Times.Once());
+            invokableMock.Verify(i => i.RedoOperation(), Times.Once());
+            Assert.False(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
+
+        [Fact]
+        public void Redo_RedoRegistersInvocation_InvocationsAreRegisteredInUndoStack()
+        {
+            var target = new UndoManager();
+
+            var invokableMock = new Mock<ITarget>(MockBehavior.Strict);
+            invokableMock.Setup(i => i.UndoOperation())
+                .Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.RedoOperation()));
+            invokableMock.Setup(i => i.RedoOperation())
+                .Callback(() => target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation()));
+
+            target.RegisterInvokation(invokableMock.Object, i => i.UndoOperation());
+
+            target.Undo();
+            target.Redo();
+
+            invokableMock.Verify(i => i.UndoOperation(), Times.Once());
+            invokableMock.Verify(i => i.RedoOperation(), Times.Once());
+            Assert.True(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
+    }
 }

@@ -19,128 +19,122 @@
  *****************************************************************************/
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Diskordia.UndoRedo.Invokations;
+using Xunit;
 
 namespace Diskordia.UndoRedo.Transactions
 {
-	/// <summary>
-	/// Summary description for UndoRedoTransactionTests
-	/// </summary>
-	[TestClass]
-	public class TransactionTests
-	{
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void Constructor_TransactionManagerNullReference_ThrowsException()
-		{
-			Transaction target = new Transaction(null);
-		}
+    public class TransactionTests
+    {
+        [Fact]
+        public void Constructor_TransactionManagerNullReference_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new Transaction(null));
+        }
 
-		[TestMethod]
-		public void Commit_CommitsTransactionInTransactionManager()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
+        [Fact]
+        public void Commit_CommitsTransactionInTransactionManager()
+        {
+            TransactionManagerStub transactionManager = new TransactionManagerStub();
+            Transaction target = new Transaction(transactionManager);
 
-			target.Commit();
+            target.Commit();
 
-			Assert.IsTrue(transactionManager.CommitCalled);
-		}
+            Assert.True(transactionManager.CommitCalled);
+        }
 
-		[TestMethod]
-		public void Rollback_RollbacksTransactionInTransactionManager()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
+        [Fact]
+        public void Rollback_RollbacksTransactionInTransactionManager()
+        {
+            TransactionManagerStub transactionManager = new TransactionManagerStub();
+            Transaction target = new Transaction(transactionManager);
 
-			target.Rollback();
+            target.Rollback();
 
-			Assert.IsTrue(transactionManager.RollbackCalled);
-		}
+            Assert.True(transactionManager.RollbackCalled);
+        }
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void RegisterInvokation_InvokationNullReference_ThrowsException()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
+        [Fact]
+        public void RegisterInvokation_InvokationNullReference_ThrowsException()
+        {
+            TransactionManagerStub transactionManager = new TransactionManagerStub();
+            Transaction target = new Transaction(transactionManager);
 
-			target.RegisterInvokation((IInvokable)null);
-		}
+            Assert.Throws<ArgumentNullException>(() => target.RegisterInvokation((IInvokable)null));
+        }
 
-		[TestMethod]
-		public void RegisterInvokation_AddsInvokationToTheInternalStack()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
+        [Fact]
+        public void RegisterInvokation_AddsInvokationToTheInternalStack()
+        {
+            TransactionManagerStub transactionManager = new TransactionManagerStub();
+            Transaction target = new Transaction(transactionManager);
 
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
-			target.RegisterInvokation(invokableMock.Object);
+            Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
+            target.RegisterInvokation(invokableMock.Object);
 
-			target.Invoke();
+            target.Invoke();
 
-			invokableMock.Verify(i => i.Invoke(), Times.Once());
-		}
+            invokableMock.Verify(i => i.Invoke(), Times.Once());
+        }
 
-		[TestMethod]
-		public void SetActionName_StringNullReference_SetsEmptyString()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
+        [Fact]
+        public void SetActionName_StringNullReference_SetsEmptyString()
+        {
+            TransactionManagerStub transactionManager = new TransactionManagerStub();
+            Transaction target = new Transaction(transactionManager);
 
-			target.ActionName = null;
+            target.ActionName = null;
 
-			string expected = string.Empty;
-			string actual = target.ActionName;
+            string expected = string.Empty;
+            string actual = target.ActionName;
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.Equal(expected, actual);
+        }
 
-		[TestMethod]
-		public void SetActionName_ValidActionName_SetsEmptyString()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
+        [Fact]
+        public void SetActionName_ValidActionName_SetsEmptyString()
+        {
+            TransactionManagerStub transactionManager = new TransactionManagerStub();
+            Transaction target = new Transaction(transactionManager);
 
-			string expected = "Paste";
-			target.ActionName = expected;
+            string expected = "Paste";
+            target.ActionName = expected;
 
-			string actual = target.ActionName;
+            string actual = target.ActionName;
 
-			Assert.AreEqual(expected, actual);
-		}
+            Assert.Equal(expected, actual);
+        }
 
-		[TestMethod]
-		public void Invoke_InvokesAllRegisteredInvokations()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
+        [Fact]
+        public void Invoke_InvokesAllRegisteredInvokations()
+        {
+            TransactionManagerStub transactionManager = new TransactionManagerStub();
+            Transaction target = new Transaction(transactionManager);
 
-			Mock<IInvokable> invokableMock1 = new Mock<IInvokable>(MockBehavior.Loose);
-			Mock<IInvokable> invokableMock2 = new Mock<IInvokable>(MockBehavior.Loose);
+            Mock<IInvokable> invokableMock1 = new Mock<IInvokable>(MockBehavior.Loose);
+            Mock<IInvokable> invokableMock2 = new Mock<IInvokable>(MockBehavior.Loose);
 
-			invokableMock1.Setup(i => i.Invoke()).Callback(() => invokableMock2.Verify(t => t.Invoke(), Times.Once()));
-			invokableMock2.Setup(i => i.Invoke()).Callback(() => invokableMock1.Verify(t => t.Invoke(), Times.Never()));
+            invokableMock1.Setup(i => i.Invoke()).Callback(() => invokableMock2.Verify(t => t.Invoke(), Times.Once()));
+            invokableMock2.Setup(i => i.Invoke()).Callback(() => invokableMock1.Verify(t => t.Invoke(), Times.Never()));
 
-			target.RegisterInvokation(invokableMock1.Object);
-			target.RegisterInvokation(invokableMock2.Object);
+            target.RegisterInvokation(invokableMock1.Object);
+            target.RegisterInvokation(invokableMock2.Object);
 
-			target.Invoke();
+            target.Invoke();
 
-			invokableMock1.Verify(i => i.Invoke(), Times.Once());
-			invokableMock2.Verify(i => i.Invoke(), Times.Once());
-		}
+            invokableMock1.Verify(i => i.Invoke(), Times.Once());
+            invokableMock2.Verify(i => i.Invoke(), Times.Once());
+        }
 
-		public void Dispose_CommitsTransaction()
-		{
-			TransactionManagerStub transactionManager = new TransactionManagerStub();
-			Transaction target = new Transaction(transactionManager);
+        public void Dispose_CommitsTransaction()
+        {
+            TransactionManagerStub transactionManager = new TransactionManagerStub();
+            Transaction target = new Transaction(transactionManager);
 
-			target.Dispose();
+            target.Dispose();
 
-			Assert.IsTrue(transactionManager.CommitCalled);
-		}
-	}
+            Assert.True(transactionManager.CommitCalled);
+        }
+    }
 }

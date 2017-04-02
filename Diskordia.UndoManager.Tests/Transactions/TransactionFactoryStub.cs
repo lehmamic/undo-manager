@@ -20,16 +20,16 @@
 
 namespace Diskordia.UndoRedo.Transactions
 {
-	internal class TransactionFactoryStub : ITransactionFactory
-	{
-		public IInvokableTransaction Transaction { get; set; }
+    internal class TransactionFactoryStub : ITransactionFactory
+    {
+        public IInvokableTransaction Transaction { get; set; }
 
-		public bool TransactionCreated { get; set; }
+        public bool TransactionCreated { get; set; }
 
-		public IInvokableTransaction CreateTransaction(ITransactionManager transactionManager)
-		{
-			this.TransactionCreated = true;
-			return this.Transaction;
-		}
-	}
+        public IInvokableTransaction CreateTransaction(ITransactionManager transactionManager)
+        {
+            this.TransactionCreated = true;
+            return this.Transaction;
+        }
+    }
 }

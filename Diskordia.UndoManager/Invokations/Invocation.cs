@@ -18,13 +18,15 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
+using Diskordia.UndoRedo.Invokations;
+
 namespace Diskordia.UndoRedo.Invocation
 {
 	/// <summary>
 	/// The invocation class includes the selector, the receiver and the arguments to call a method of an object.
 	/// </summary>
 	/// <typeparam name="TSource">The type of the source.</typeparam>
-	internal abstract class Invocation<TSource> : IInvokable
+	public abstract class Invocation<TSource> : IInvokable
 	{
 		private string actionName = string.Empty;
 

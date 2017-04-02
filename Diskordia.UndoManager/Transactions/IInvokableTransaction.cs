@@ -27,7 +27,7 @@ namespace Diskordia.UndoRedo.Transactions
 	/// <summary>
 	/// Inernal interface for transaction - undo manager interaction.
 	/// </summary>
-	internal interface IInvokableTransaction : ITransaction, IInvokable, IEnumerable<IInvokable>
+	public interface IInvokableTransaction : ITransaction, IInvokable, IEnumerable<IInvokable>
 	{
 		/// <summary>
 		/// Registers an <see cref="IInvokable"/> implementation to the <see cref="ITransaction"/>.

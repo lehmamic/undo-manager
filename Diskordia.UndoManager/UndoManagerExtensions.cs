@@ -21,7 +21,6 @@
 using System;
 using System.Linq.Expressions;
 using Diskordia.UndoRedo.Invokations;
-using Diskordia.UndoRedo.Proxies;
 
 namespace Diskordia.UndoRedo
 {
@@ -88,17 +87,17 @@ namespace Diskordia.UndoRedo
 			undoManager.RegisterInvokation(invokation);
 		}
 
-		/// <summary>
-		/// Prepares the target object as the subject for the dynamically invoked undo/redo operations.
-		/// </summary>
-		/// <param name="undoManager">The <see cref="IUndoManager"/> instance.</param>
-		/// <param name="target">The target of the invokation.</param>
-		/// <returns>The proxy object targeting the provided <paramref name="target"/>.</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="target"/> is a <see langword="null"/> reference.</exception>
-		public static TTarget RegisterInvokationFor<TTarget>(this IUndoManager undoManager, TTarget target)
-		{
-			var proxy = new InvokationRegistrationProxy<TTarget>(undoManager, target);
-			return (TTarget)proxy.GetTransparentProxy();
-		}
+		/////// <summary>
+		/////// Prepares the target object as the subject for the dynamically invoked undo/redo operations.
+		/////// </summary>
+		/////// <param name="undoManager">The <see cref="IUndoManager"/> instance.</param>
+		/////// <param name="target">The target of the invokation.</param>
+		/////// <returns>The proxy object targeting the provided <paramref name="target"/>.</returns>
+		/////// <exception cref="ArgumentNullException"><paramref name="target"/> is a <see langword="null"/> reference.</exception>
+		////public static TTarget RegisterInvokationFor<TTarget>(this IUndoManager undoManager, TTarget target)
+		////{
+		////	var proxy = new InvokationRegistrationProxy<TTarget>(undoManager, target);
+		////	return (TTarget)proxy.GetTransparentProxy();
+		////}
 	}
 }

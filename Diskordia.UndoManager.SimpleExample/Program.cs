@@ -81,8 +81,8 @@ namespace SimpleExample
 				this.color = color;
 				Console.WriteLine("Set color {0}.", color);
 
-				UndoManager.DefaultUndoManager.RegisterInvokationFor(this)
-					.SetColor(backup);
+				////UndoManager.DefaultUndoManager.RegisterInvokationFor(this)
+				////	.SetColor(backup);
 			}
 		}
 	}

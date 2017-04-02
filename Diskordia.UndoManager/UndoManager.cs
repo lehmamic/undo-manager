@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Diskordia.UndoRedo.Invokations;
-using Diskordia.UndoRedo.Properties;
 using Diskordia.UndoRedo.State;
 using Diskordia.UndoRedo.Transactions;
 
@@ -54,7 +53,7 @@ namespace Diskordia.UndoRedo
 		/// </summary>
 		/// <param name="transactionFactory">The transaction factory.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="transactionFactory"/> is a <see langword="null"/> reference.</exception>
-		internal UndoManager(ITransactionFactory transactionFactory)
+		public UndoManager(ITransactionFactory transactionFactory)
 		{
 			if (transactionFactory == null)
 			{
@@ -264,13 +263,13 @@ namespace Diskordia.UndoRedo
 
 			if (!this.openTransactions.Contains(transaction))
 			{
-				throw new ArgumentException("Can not find the transaction to commit", "transaction");
+				throw new ArgumentException("Cannot find the transaction to commit", "transaction");
 			}
 
 			// only switch the state to committing if the undo manager is not doing another task (e.g. undoing).
-			UndoRedoState state = this.state == UndoRedoState.Idle ? UndoRedoState.Committing : this.state;
+			UndoRedoState currentState = this.state == UndoRedoState.Idle ? UndoRedoState.Committing : this.state;
 
-			using (new StateSwitcher(this, state))
+			using (new StateSwitcher(this, currentState))
 			{
 				while (this.openTransactions.Contains(transaction))
 				{
@@ -315,6 +314,7 @@ namespace Diskordia.UndoRedo
 			while (this.openTransactions.Contains(transaction))
 			{
 				IInvokableTransaction toRollback = this.openTransactions.Pop();
+			    toRollback.Rollback();
 			}
 		}
 
@@ -338,7 +338,7 @@ namespace Diskordia.UndoRedo
 
 		private static string GetMenuItemTitelForAction(string operation, string actionName)
 		{
-			return !string.IsNullOrEmpty(actionName) ? string.Format(CultureInfo.CurrentUICulture, Resources.UndoRedoMenuLabelPattern, operation, actionName) : operation;
+			return !string.IsNullOrEmpty(actionName) ? string.Format(CultureInfo.CurrentUICulture, "{0} \"{1}\"", operation, actionName) : operation;
 		}
 
 		private static void InvokeInvocation(IInvokable invokation)
@@ -349,7 +349,7 @@ namespace Diskordia.UndoRedo
 			}
 			catch (Exception e)
 			{
-				throw new ActionInvokationException(Resources.ActionInvokeExceptionMessage, e);
+				throw new ActionInvokationException("An error occured while performing the registered operation", e);
 			}
 		}
 
@@ -364,7 +364,7 @@ namespace Diskordia.UndoRedo
 		/// <returns>The localized titel of the undo menu item for the provided action name.</returns>
 		public static string GetUndoMenuTitleForUndoActionName(string actionName)
 		{
-			return GetMenuItemTitelForAction(Resources.UndoMenuItemName, actionName);
+			return GetMenuItemTitelForAction("Undo", actionName);
 		}
 
 		/// <summary>
@@ -374,7 +374,7 @@ namespace Diskordia.UndoRedo
 		/// <returns>The localized titel of the redo menu item for the provided action name.</returns>
 		public static string GetRedoMenuTitleForRedoActionName(string actionName)
 		{
-			return GetMenuItemTitelForAction(Resources.RedoMenuItemName, actionName);
+			return GetMenuItemTitelForAction("Redo", actionName);
 		}
 
 		#endregion

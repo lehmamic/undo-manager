@@ -19,93 +19,40 @@
  *****************************************************************************/
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 
 namespace Diskordia.UndoRedo.Invokations
 {
-	/// <summary>
-	/// Summary description for InvocationTests
-	/// </summary>
-	[TestClass]
-	public class ActionInvokationTests
-	{
-		public ActionInvokationTests()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
+    public class ActionInvokationTests
+    {
+        [Fact]
+        public void Constructor_InvokationNullReference_ThrowsException()
+        {
+            string argument = "1234";
 
-		private TestContext testContextInstance;
+            Assert.Throws<ArgumentNullException>(() => new ActionInvokation<string>(null, argument));
+        }
 
-		/// <summary>
-		///Gets or sets the test context which provides
-		///information about and functionality for the current test run.
-		///</summary>
-		public TestContext TestContext
-		{
-			get
-			{
-				return testContextInstance;
-			}
-			set
-			{
-				testContextInstance = value;
-			}
-		}
+        [Fact]
+        public void Constructor_ArgumentNullReference_ThrowsException()
+        {
+            Mock<ITarget> targetMock = new Mock<ITarget>(MockBehavior.Strict);
 
-		#region Additional test attributes
-		//
-		// You can use the following additional attributes as you write your tests:
-		//
-		// Use ClassInitialize to run code before running the first test in the class
-		// [ClassInitialize()]
-		// public static void MyClassInitialize(TestContext testContext) { }
-		//
-		// Use ClassCleanup to run code after all tests in a class have run
-		// [ClassCleanup()]
-		// public static void MyClassCleanup() { }
-		//
-		// Use TestInitialize to run code before running each test 
-		// [TestInitialize()]
-		// public void MyTestInitialize() { }
-		//
-		// Use TestCleanup to run code after each test has run
-		// [TestCleanup()]
-		// public void MyTestCleanup() { }
-		//
-		#endregion
+            Assert.Throws<ArgumentNullException>(() => new ActionInvokation<string>(targetMock.Object.Add, null));
+        }
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void Constructor_InvokationNullReference_ThrowsException()
-		{
-			string argument = "1234";
+        [Fact]
+        public void Invoke_InvokesPassedDelegate()
+        {
+            string argument = "1234";
+            Mock<ITarget> targetMock = new Mock<ITarget>(MockBehavior.Strict);
+            targetMock.Setup(t => t.Add(argument));
 
-			ActionInvokation<string> target = new ActionInvokation<string>(null, argument);
-		}
+            ActionInvokation<string> target = new ActionInvokation<string>(targetMock.Object.Add, argument);
+            target.Invoke();
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void Constructor_ArgumentNullReference_ThrowsException()
-		{
-			Mock<ITarget> targetMock = new Mock<ITarget>(MockBehavior.Strict);
-
-			ActionInvokation<string> target = new ActionInvokation<string>(targetMock.Object.Add, null);
-		}
-
-		[TestMethod]
-		public void Invoke_InvokesPassedDelegate()
-		{
-			string argument = "1234";
-			Mock<ITarget> targetMock = new Mock<ITarget>(MockBehavior.Strict);
-			targetMock.Setup(t => t.Add(argument));
-
-			ActionInvokation<string> target = new ActionInvokation<string>(targetMock.Object.Add, argument);
-			target.Invoke();
-
-			targetMock.Verify(t => t.Add(argument), Times.Once());
-		}
-	}
+            targetMock.Verify(t => t.Add(argument), Times.Once());
+        }
+    }
 }

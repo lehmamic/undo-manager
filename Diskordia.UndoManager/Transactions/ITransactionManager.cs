@@ -25,7 +25,7 @@ namespace Diskordia.UndoRedo.Transactions
 	/// <summary>
 	/// Interface for the ndo manager to encapsulate the transaction - undo manager interaction.
 	/// </summary>
-	internal interface ITransactionManager
+	public interface ITransactionManager
 	{
 		/// <summary>
 		/// Commits the provided transaction.

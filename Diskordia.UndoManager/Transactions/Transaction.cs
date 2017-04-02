@@ -29,7 +29,7 @@ namespace Diskordia.UndoRedo.Transactions
 	/// <summary>
 	/// A <see cref="Transaction"/> records the undo operations, which are registered in the <see cref="UndoManager"/> while commiting the <see cref="Transaction"/>.
 	/// </summary>
-	internal sealed class Transaction : IInvokableTransaction
+	public sealed class Transaction : IInvokableTransaction
 	{
 		private readonly Stack<IInvokable> invokables = new Stack<IInvokable>();
 		private readonly ITransactionManager owner;
@@ -42,7 +42,7 @@ namespace Diskordia.UndoRedo.Transactions
 		/// </summary>
 		/// <param name="transactionManager">The <see cref="ITransactionManager"/> controlling this transaction.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="transactionManager"/> is a <see langword="null"/> reference.</exception>
-		internal Transaction(ITransactionManager transactionManager)
+		public Transaction(ITransactionManager transactionManager)
 		{
 			if (transactionManager == null)
 			{

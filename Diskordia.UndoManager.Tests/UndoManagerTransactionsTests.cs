@@ -20,140 +20,90 @@
 
 using Diskordia.UndoRedo.Invokations;
 using Diskordia.UndoRedo.Transactions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 
 namespace Diskordia.UndoRedo
 {
-	/// <summary>
-	/// Summary description for UndoManagerTransactionsTests
-	/// </summary>
-	[TestClass]
-	public class UndoManagerTransactionsTests
-	{
-		public UndoManagerTransactionsTests()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
-		}
+    public class UndoManagerTransactionsTests
+    {
 
-		private TestContext testContextInstance;
+        [Fact]
+        public void RegisterInvocation_WithoutTransaction_RegistersInvocationWithPrivateTransaction()
+        {
+            TransactionFactoryStub factory = new TransactionFactoryStub();
+            UndoManager target = new UndoManager(factory);
 
-		/// <summary>
-		///Gets or sets the test context which provides
-		///information about and functionality for the current test run.
-		///</summary>
-		public TestContext TestContext
-		{
-			get
-			{
-				return testContextInstance;
-			}
-			set
-			{
-				testContextInstance = value;
-			}
-		}
+            factory.Transaction = new TransactionStub(target);
 
-		#region Additional test attributes
-		//
-		// You can use the following additional attributes as you write your tests:
-		//
-		// Use ClassInitialize to run code before running the first test in the class
-		// [ClassInitialize()]
-		// public static void MyClassInitialize(TestContext testContext) { }
-		//
-		// Use ClassCleanup to run code after all tests in a class have run
-		// [ClassCleanup()]
-		// public static void MyClassCleanup() { }
-		//
-		// Use TestInitialize to run code before running each test 
-		// [TestInitialize()]
-		// public void MyTestInitialize() { }
-		//
-		// Use TestCleanup to run code after each test has run
-		// [TestCleanup()]
-		// public void MyTestCleanup() { }
-		//
-		#endregion
+            Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
+            target.RegisterInvokation(invokableMock.Object);
 
-		[TestMethod]
-		public void RegisterInvocation_WithoutTransaction_RegistersInvocationWithPrivateTransaction()
-		{
-			TransactionFactoryStub factory = new TransactionFactoryStub();
-			UndoManager target = new UndoManager(factory);
+            Assert.True(factory.TransactionCreated);
+            Assert.True(((TransactionStub)factory.Transaction).InvokationRegistered);
+            Assert.True(((TransactionStub)factory.Transaction).Commited);
 
-			factory.Transaction = new TransactionStub(target);
+            Assert.True(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
 
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
-			target.RegisterInvokation(invokableMock.Object);
+        [Fact]
+        public void RegisterInvocation_WithTransaction_RegistersInvocationWithPublicTransaction()
+        {
+            TransactionFactoryStub factory = new TransactionFactoryStub();
+            UndoManager target = new UndoManager(factory);
 
-			Assert.IsTrue(factory.TransactionCreated);
-			Assert.IsTrue(((TransactionStub)factory.Transaction).InvokationRegistered);
-			Assert.IsTrue(((TransactionStub)factory.Transaction).Commited);
+            factory.Transaction = new TransactionStub(target);
 
-			Assert.IsTrue(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
+            Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
 
-		[TestMethod]
-		public void RegisterInvocation_WithTransaction_RegistersInvocationWithPublicTransaction()
-		{
-			TransactionFactoryStub factory = new TransactionFactoryStub();
-			UndoManager target = new UndoManager(factory);
+            using (ITransaction transaction = target.CreateTransaction())
+            {
+                target.RegisterInvokation(invokableMock.Object);
+            }
 
-			factory.Transaction = new TransactionStub(target);
+            Assert.True(factory.TransactionCreated);
+            Assert.True(((TransactionStub)factory.Transaction).InvokationRegistered);
+            Assert.True(((TransactionStub)factory.Transaction).Commited);
 
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Strict);
+            Assert.True(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
 
-			using (ITransaction transaction = target.CreateTransaction())
-			{
-				target.RegisterInvokation(invokableMock.Object);
-			}
+        [Fact]
+        public void Undo_InvocationRegisteredWithTransaction_InvokesUndoOperation()
+        {
+            UndoManager target = new UndoManager();
 
-			Assert.IsTrue(factory.TransactionCreated);
-			Assert.IsTrue(((TransactionStub)factory.Transaction).InvokationRegistered);
-			Assert.IsTrue(((TransactionStub)factory.Transaction).Commited);
+            Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
 
-			Assert.IsTrue(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
+            using (ITransaction transaction = target.CreateTransaction())
+            {
+                target.RegisterInvokation(invokableMock.Object);
+            }
 
-		[TestMethod]
-		public void Undo_InvocationRegisteredWithTransaction_InvokesUndoOperation()
-		{
-			UndoManager target = new UndoManager();
+            target.Undo();
 
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
+            invokableMock.Verify(i => i.Invoke(), Times.Once());
+            Assert.False(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
 
-			using (ITransaction transaction = target.CreateTransaction())
-			{
-				target.RegisterInvokation(invokableMock.Object);
-			}
+        [Fact]
+        public void Undo_TransactionNotCommited_CommitsTransactionAndInvokesUndoOperation()
+        {
+            UndoManager target = new UndoManager();
 
-			target.Undo();
+            Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
 
-			invokableMock.Verify(i => i.Invoke(), Times.Once());
-			Assert.IsFalse(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
+            ITransaction transaction = target.CreateTransaction();
+            target.RegisterInvokation(invokableMock.Object);
 
-		[TestMethod]
-		public void Undo_TransactionNotCommited_CommitsTransactionAndInvokesUndoOperation()
-		{
-			UndoManager target = new UndoManager();
+            target.Undo();
 
-			Mock<IInvokable> invokableMock = new Mock<IInvokable>(MockBehavior.Loose);
-
-			ITransaction transaction = target.CreateTransaction();
-			target.RegisterInvokation(invokableMock.Object);
-
-			target.Undo();
-
-			invokableMock.Verify(i => i.Invoke(), Times.Once());
-			Assert.IsFalse(target.CanUndo);
-			Assert.IsFalse(target.CanRedo);
-		}
-	}
+            invokableMock.Verify(i => i.Invoke(), Times.Once());
+            Assert.False(target.CanUndo);
+            Assert.False(target.CanRedo);
+        }
+    }
 }

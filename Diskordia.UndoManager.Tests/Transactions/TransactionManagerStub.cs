@@ -18,26 +18,26 @@
  * along with UndoManager.  If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************************/
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Diskordia.UndoRedo.Transactions
 {
-	internal class TransactionManagerStub : ITransactionManager
-	{
-		public bool CommitCalled { get; set; }
+    internal class TransactionManagerStub : ITransactionManager
+    {
+        public bool CommitCalled { get; set; }
 
-		public bool RollbackCalled { get; set; }
+        public bool RollbackCalled { get; set; }
 
-		public void CommitTransaction(IInvokableTransaction transaction)
-		{
-			Assert.IsNotNull(transaction, "The commited transaction shouldnot be null.");
-			this.CommitCalled = true;
-		}
+        public void CommitTransaction(IInvokableTransaction transaction)
+        {
+            Assert.NotNull(transaction);
+            this.CommitCalled = true;
+        }
 
-		public void RollbackTransaction(IInvokableTransaction transaction)
-		{
-			Assert.IsNotNull(transaction, "The commited transaction shouldnot be null.");
-			this.RollbackCalled = true;
-		}
-	}
+        public void RollbackTransaction(IInvokableTransaction transaction)
+        {
+            Assert.NotNull(transaction);
+            this.RollbackCalled = true;
+        }
+    }
 }
