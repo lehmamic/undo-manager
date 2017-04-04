@@ -62,13 +62,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Diskordia.UndoManager\Diskordia.UndoManager.csproj">
-      <Project>{DC77EA26-F678-4088-B93F-98B14F8B15C1}</Project>
-      <Name>Diskordia.UndoManager</Name>
-    </ProjectReference>
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <ProjectReference Include="..\Diskordia.UndoManager\Diskordia.UndoManager.csproj">
+      <Project>{30fd5ac2-dd64-4d81-80ac-a4dfe8cd9eaf}</Project>
+      <Name>Diskordia.UndoManager</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
