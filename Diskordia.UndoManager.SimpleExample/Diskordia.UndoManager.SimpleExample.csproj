@@ -4,9 +4,10 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <BuildNumber Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' ">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
-    <AssemblyVersion>$(BuildNumber)</AssemblyVersion>
-    <AssemblyFileVersion>$(BuildNumber)</AssemblyFileVersion>
-    <InformationalVersion>$(BuildNumber)</InformationalVersion>
+    <AssemblyVersion>1.0.$(BuildNumber)</AssemblyVersion>
+    <AssemblyFileVersion>1.0.$(BuildNumber)</AssemblyFileVersion>
+    <InformationalVersion>1.0.$(BuildNumber)</InformationalVersion>
+    <PackageVersion>1.0.$(BuildNumber)</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
