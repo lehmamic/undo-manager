@@ -2,6 +2,10 @@
 
   <PropertyGroup>    
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <BuildNumber Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' ">$(APPVEYOR_BUILD_NUMBER)</BuildNumber>
+    <AssemblyVersion>$(BuildNumber)</AssemblyVersion>
+    <AssemblyFileVersion>$(BuildNumber)</AssemblyFileVersion>
+    <InformationalVersion>$(BuildNumber)</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
