@@ -2,10 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Authors>lehmamic</Authors>
+    <PackageProjectUrl>https://github.com/lehmamic/undo-manager</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/lehmamic/undo-manager</RepositoryUrl>
+    <PackageTags>undo-manager</PackageTags>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Castle.Core" Version="4.0.0" />
-  </ItemGroup>
 
 </Project>

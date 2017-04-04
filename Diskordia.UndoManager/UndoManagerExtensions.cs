@@ -20,7 +20,6 @@
 
 using System;
 using System.Linq.Expressions;
-using Castle.DynamicProxy;
 using Diskordia.UndoRedo.Invokations;
 
 namespace Diskordia.UndoRedo
