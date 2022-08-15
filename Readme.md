@@ -1,5 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/lenfqey6oopw5r0i/branch/master?svg=true)](https://ci.appveyor.com/project/lehmamic/undo-manager/branch/master) [![NuGet version](https://badge.fury.io/nu/Diskordia.UndoManager.svg)](https://badge.fury.io/nu/Diskordia.UndoManager)
 
+> This library is archived and not maintained anymore.
 
 # Project Description
 Undo Manager is a recorder of undo and redo operations for .NET with the goal to take full advantage of .NET 4.0 and C# 4.0 features (i.e. lambda expressions and dynamics). The Undo Manager API is very easy to use and does not require a deep understanding of the topic.
